@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Yet another blog</title><link href="http://ir193.github.io/" rel="alternate"></link><link href="http://ir193.github.io/feeds%5Ctools.atom.xml" rel="self"></link><id>http://ir193.github.io/</id><updated>2013-06-22T19:27:29+08:00</updated><entry><title>Test sublime plugin</title><link href="http://ir193.github.io/post/test-sublime-plugin.html" rel="alternate"></link><updated>2013-06-22T19:27:29+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-22:post/test-sublime-plugin.html</id><summary type="html">&lt;h6&gt;&lt;/h6&gt;
-&lt;p&gt;测试中文和插件&lt;/p&gt;
-&lt;h6&gt;&lt;/h6&gt;
-&lt;p&gt;使用中文&lt;/p&gt;</summary><category term="sublime"></category></entry></feed>
