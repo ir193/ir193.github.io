@@ -1,6 +1,6 @@
 Title: 几个雷客图ASP站长安全助手的小问题
 Slug: lake2_bug
-Date: 2013-10-20 00:08:05
+Date: 2009-10-08 09:32:35
 Tags: Hack, imported blog, 
 Category: Hack
 Author: ir193

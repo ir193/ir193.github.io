@@ -34,152 +34,6 @@
 <li class="posts"><article class="post hentry">
 	<header>
 		<h2 class="post-title" >
-			<a href="./post/lake2_bug.html" rel="bookmark" title="Permalink to 几个雷客图ASP站长安全助手的小问题">几个雷客图ASP站长安全助手的小问题</a>
-		</h2>
-		<div class="post-info">
-			<span class="post-lable">Post in</span>
-			<abbr class="date" title="2013-10-20T00:08:05"> 
-				<a href="./archive/2013/Oct/index.html">Sun 20 October 2013 </a>
-			</abbr>
-			<!-- COMMENTS -->
-		</div>
-	</header>
-	<div class="summary"><p>这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的开放实验室写的。</p>
-<p>从电脑里翻出来这个真是百感交集啊，现在来看这篇文章，这些小trick确实后来也没有听说过。当然这与asp的没落、我不再关注web安全有着不小关系。</p>
-<p>大学四年，安全方面的技术确实没有积累，是根本没有看。而现在在诸葛老师的实验室，似乎绕了一个圈子又回到了开始。而一圈走下来却发现自己没有留下什么。确实有些伤感。</p>
-<h4>以下是导入的正文</h4>
-<hr />
-<p>雷客图[http://down.chinaz.com/soft/17030.htm]是大侠lake2开发的基于ASP进行查杀木马、维护网站安全的程序。</p>
-<p>雷客图采用正则表达式检查关键字的方法查找ASP木马，重点检查了一些关键组件的方法，如：wscript.shell的exec，fso的OpenTextFile。在网上能见到的ASP查杀工具中，雷客图的查杀率和误杀率都相当突出。但由于ASP脚本语言的特性，还是有一些方法突破雷客图的。本人水平不高，不过是发现几个小问题，写下来请各位高手指正。</p>
-<ol>
-<li>突破CreateObject组件检查（针对于老版本）</li>
-</ol>
-<p>CreateObject是所有ASP木马不可避免的函数，几乎所有功能都必须由其开始。老版本的雷客图检查了是否包含<code>&amp;</code>或<code>+</code>以及是否为变量等，防止使用字符串拼接躲过检查。</p>
-<p>满足以下条件</p>
-<ul>
-<li>
-<p>括号内没有引号</p>
-</li>
-<li>
-<p>括号内出现<code>&amp;</code>或者<code>+</code></p>
-</li>
-</ul>
-<p>时即判断为有问题。</p>
-<p>但由于vbs的正则表达式默认采用贪婪模式，即匹配最长的满足条件的字符串。这样，假如在CreateObject一行的末尾，又出现一个括号的话，正则表达式将匹配到最后一个括号。为了不产生语法错误，可以把括号放在注释中。像这样：</p>
-<div class="highlight"><pre><span class="o">&lt;!--</span> <span class="n">lang</span><span class="o">:</span><span class="n">vbs</span> <span class="o">--&gt;</span>
-<span class="n">Function</span> <span class="n">CreateObj</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-    <span class="n">Set</span> <span class="n">CreateObj</span> <span class="o">=</span> <span class="n">server</span><span class="p">.</span><span class="n">CreateObject</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>      <span class="err">&#39;</span><span class="s">&quot;&quot;&quot;&quot;</span><span class="p">)</span>
-<span class="n">End</span> <span class="n">Function</span>
-</pre></div>
-
-
-<p>我们以变量作为CreateObject的参数，同时在括号后加上注释。以满足有引号的条件。最后加上括号使表达式匹配到最后一个括号。这样就绕过了检查。</p>
-<p>而对于新版本（1.6 sp1），直接用字符串拼接就行了。</p>
-<ol>
-<li>空格躲过特征方法检查</li>
-</ol>
-<p>除了一些比较危险的组件，雷客图还检查了一些组件的方法。由于组件的方法不能像字符串变量一样拼接，绕过的方法受到限制。</p>
-<p>但雷客图的特征码中，为了保证查杀的准确性，都只查杀以<code>.</code>开头的关键字。如<code>.ExecuteStatement</code></p>
-<p>问题是我们可以在方法前加一个空格，还是可以运行的</p>
-<div class="highlight"><pre><span class="o">&lt;!--</span> <span class="n">lang</span><span class="o">:</span><span class="n">vbs</span> <span class="o">--&gt;</span>
-<span class="n">wshl</span><span class="p">.</span> <span class="n">exec</span> <span class="n">strCmd</span>
-</pre></div>
-
-
-<p>这个是一个很大的突破，几乎使asp木马彻底绕过了检查。</p>
-<ol>
-<li>MSScriptControl执行任意语句</li>
-</ol>
-<p>雷客图没有查杀MSScriptControl组件的关键字，而这个可以执行任意语句。</p>
-<p>这个网上很多了，使用MSScriptControl执行代码，就可以使用<code>&amp;</code>或<code>+</code>。虽然1.6sp2版本检查了这个组件，但是我们还是可以使用上面的方法躲过查杀。</p>
-<ol>
-<li>用Jscript躲过查杀</li>
-</ol>
-<p>雷客图的很多特征码是针对VBS的，但ASP也可以用Jscript写。Jscript由于可以自由的换行、插入空格，比VBS更灵活。</p>
-<p>比如调用Wscript.shell的exec可以有两种形式：</p>
-<div class="highlight"><pre><span class="o">&lt;!--</span> <span class="n">lang</span><span class="o">:</span><span class="n">vbs</span> <span class="o">--&gt;</span>
-<span class="n">owshl</span><span class="p">.</span><span class="n">exec</span>
-<span class="n">owshl</span><span class="p">[</span><span class="s">&quot;exec&quot;</span><span class="p">]</span>
-</pre></div>
-
-
-<p>第二种的方法名是字符串形式，所以可以用<code>+</code>拼接（不能用<code>&amp;</code>）。</p>
-<ol>
-<li>万能加密工具</li>
-</ol>
-<p>以MSScriptControl主要方法可以写一个万能加密工具，用来躲过雷客图的查杀。但是还没有写。</p>
-<ol>
-<li>使用字符集来躲过查杀</li>
-</ol>
-<p>这个是JNC大牛说的</p>
-<div class="highlight"><pre><span class="cp">&lt;%</span><span class="err">@</span> <span class="n">codepage</span><span class="o">=</span><span class="mi">65000</span><span class="cp">%&gt;</span><span class="x">%e+x-x+x-e+x-c+x-u+x-t+x-e+x-(+x-r+x-e+x-q+x-u+x-e+x-s+x-t+x-(+x-+ACI-c+ACI)+x-)+x</span><span class="err">-%&gt;</span><span class="x"></span>
-</pre></div>
-
-
-<p>雷客图总的来说是一个相当优秀的ASP木马查杀工具，其中有很多东西值得学习。我小菜不敢挑战lake2大侠，无非是在被忽视的地方小打小闹一下。最后，希望lake2多开发一些工具，多公布几个漏洞。</p>
-<p>感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~</p></div>
-	<footer>
-		<span class="post-lable">Category:</span>
-		<abbr class="category">
-			<a href="./category/hack.html">Hack</a>
-		</abbr>
-	</footer>
-	<hr />
-</article></li>
-<li class="posts"><article class="post hentry">
-	<header>
-		<h2 class="post-title" >
-			<a href="./post/cve-2013-2596.html" rel="bookmark" title="Permalink to cve-2013-2596 本地提权漏洞信息">cve-2013-2596 本地提权漏洞信息</a>
-		</h2>
-		<div class="post-info">
-			<span class="post-lable">Post in</span>
-			<abbr class="date" title="2013-10-17T13:10:58"> 
-				<a href="./archive/2013/Oct/index.html">Thu 17 October 2013 </a>
-			</abbr>
-			<!-- COMMENTS -->
-		</div>
-	</header>
-	<div class="summary"><h3>目前情况</h3>
-<p><a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596">cve-2013-2596</a>本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）</p>
-<p>网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 /drivers/video/fbmem.c。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。</p>
-<p>手上的手机，联想860i、华为荣耀四核，全部受这个漏洞影响。其中，联想860i不能成功提权但是重启，华为U9806成功提权。</p>
-<p>根据目前搜到的信息，最早发布的exploit是xda论坛上的<a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;page=4">motochopper</a>，只是作为工具发布，没有源代码和原理分析。</p>
-<p>另外xda论坛上有人根据<a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;page=4">motochopper</a>做逆向分析，猜测了原理。重新写出的利用工具[kernelchopper][http://forum.xda-developers.com/showthread.php?p=40873964]，开源，但比较不好用，只提供了写内存功能，需要自己写内存。</p>
-<h3>利用方法</h3>
-<p>[Patch地址][https://github.com/torvalds/linux/commit/fc9bbca8f650e5f738af8806317c0a041a48ae4a]
-目前都这个漏洞的原理还没有搞清楚。应该是个整数溢出漏洞，而且属于相当容易利用的。使用mmap可以直接将内核空间map到用户空间上。</p>
-<p>motochopper将内存映射之后，修改了当前用户的uid，从2000(shell)到0(root)。</p>
-<p>而xda论坛上介绍的方法是找到sys_setuid代码的内存地址，爆破。</p>
-<div class="highlight"><pre><span class="nx">c0077650</span> <span class="o">&lt;</span><span class="nb">sys_setuid</span><span class="o">&gt;</span><span class="p">:</span>
-<span class="nx">c0077650</span><span class="p">:</span>       <span class="nx">e92d40f8</span>        <span class="nb">push</span>    <span class="p">{</span><span class="nx">r3</span><span class="p">,</span> <span class="nx">r4</span><span class="p">,</span> <span class="nx">r5</span><span class="p">,</span> <span class="nx">r6</span><span class="p">,</span> <span class="nx">r7</span><span class="p">,</span> <span class="nx">lr</span><span class="p">}</span>
-<span class="nx">c0077654</span><span class="p">:</span>       <span class="nx">e1a05000</span>        <span class="nx">mov</span>     <span class="nx">r5</span><span class="p">,</span> <span class="nx">r0</span>
-<span class="nx">c0077658</span><span class="p">:</span>       <span class="nx">eb0040d6</span>        <span class="nx">bl</span>      <span class="nx">c00879b8</span> <span class="o">&lt;</span><span class="nx">prepare_creds</span><span class="o">&gt;</span>
-<span class="nx">c007765c</span><span class="p">:</span>       <span class="nx">e2504000</span>        <span class="nx">subs</span>    <span class="nx">r4</span><span class="p">,</span> <span class="nx">r0</span><span class="p">,</span> <span class="vi">#0</span>
-<span class="nx">c0077660</span><span class="p">:</span>       <span class="mi">0</span><span class="nx">a000027</span>        <span class="nx">beq</span>     <span class="nx">c0077704</span> <span class="o">&lt;</span><span class="nb">sys_setuid</span><span class="o">+</span><span class="mh">0xb4</span><span class="o">&gt;</span>
-<span class="nx">c0077664</span><span class="p">:</span>       <span class="nx">e1a0200d</span>        <span class="nx">mov</span>     <span class="nx">r2</span><span class="p">,</span> <span class="nx">sp</span>
-<span class="nx">c0077668</span><span class="p">:</span>       <span class="nx">e3c23d7f</span>        <span class="nx">bic</span>     <span class="nx">r3</span><span class="p">,</span> <span class="nx">r2</span><span class="p">,</span> <span class="vi">#8128</span>   <span class="p">;</span> <span class="mh">0x1fc0</span>
-<span class="nx">c007766c</span><span class="p">:</span>       <span class="nx">e3c3303f</span>        <span class="nx">bic</span>     <span class="nx">r3</span><span class="p">,</span> <span class="nx">r3</span><span class="p">,</span> <span class="vi">#63</span>     <span class="p">;</span> <span class="mh">0x3f</span>
-<span class="nx">c0077670</span><span class="p">:</span>       <span class="nx">e3a00007</span>        <span class="nx">mov</span>     <span class="nx">r0</span><span class="p">,</span> <span class="vi">#7</span>
-<span class="nx">c0077674</span><span class="p">:</span>       <span class="nx">e593300c</span>        <span class="nx">ldr</span>     <span class="nx">r3</span><span class="p">,</span> <span class="err">[</span><span class="nx">r3</span><span class="p">,</span> <span class="vi">#12</span><span class="cp">]</span>
-c0077678:       e59362fc        ldr     r6, <span class="cp">[</span><span class="nx">r3</span><span class="p">,</span> <span class="vi">#764</span><span class="cp">]</span>  ; 0x2fc
-c007767c:       ebffd80f        bl      c006d6c0 <span class="nt">&lt;nsown</span><span class="na">_capable</span><span class="nt">&gt;</span>
-c0077680:       e3500000        cmp     r0, #0
-c0077684:       1a00000a        bne     c00776b4 <span class="nt">&lt;sys</span><span class="na">_setuid</span><span class="err">+</span><span class="na">0x64</span><span class="nt">&gt;</span>
-</pre></div>
-
-
-<p>另一篇分析http://securityblog.org/2013/04/30/SE-Android-and-the-motochopper-exploit/</p></div>
-	<footer>
-		<span class="post-lable">Category:</span>
-		<abbr class="category">
-			<a href="./category/blue-lotus.html">Blue-lotus</a>
-		</abbr>
-	</footer>
-	<hr />
-</article></li>
-<li class="posts"><article class="post hentry">
-	<header>
-		<h2 class="post-title" >
 			<a href="./post/cve-2013-2094.html" rel="bookmark" title="Permalink to cve-2013-2094漏洞原理分析与移植">cve-2013-2094漏洞原理分析与移植</a>
 		</h2>
 		<div class="post-info">
@@ -319,9 +173,108 @@ c0077684:       1a00000a        bne     c00776b4 <span class="nt">&lt;sys</span>
 	</footer>
 	<hr />
 </article></li>
+<li class="posts"><article class="post hentry">
+	<header>
+		<h2 class="post-title" >
+			<a href="./post/graduation-is-near.html" rel="bookmark" title="Permalink to 快毕业了">快毕业了</a>
+		</h2>
+		<div class="post-info">
+			<span class="post-lable">Post in</span>
+			<abbr class="date" title="2013-07-11T21:33:26"> 
+				<a href="./archive/2013/Jul/index.html">Thu 11 July 2013 </a>
+			</abbr>
+			<!-- COMMENTS -->
+		</div>
+	</header>
+	<div class="summary"><p>开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。</p>
+<h2>毕业旅行</h2>
+<p>最近最重要的事就是跟同学去了毕业旅行。因为各种事情都赶到这个时间了，所以最后过程不可谓不艰辛。</p>
+<p><img alt="" src="/static/pictures/graduation/map.png" /></p>
+<p>先是27号晚上课题组吃饭，又吃了不少生鱼片……然后28号去邯郸看女朋友，在邯郸玩2天，然后30号早晨一早回北京，中午11到回了一下宿舍，下午1点又坐城际回家同学聚会，下了火车直接拉着箱子去吃饭。1号中午回北京，没回学校直接和志颖邈邈在北京北站一起上火车去赤峰。几天的折腾下来确实相当的累，不过幸运的是补到了卧铺票，晚上睡了几个小时。</p>
+<p>在去往赤峰的火车上遇到了一个叔叔，带了一个似乎不会说中文的年轻的女人。晚上下车时候听到了女人拼写了“V-i-e-t-n-a-m”。莫非是遇到了传说中的……</p>
+<p>到了赤峰市的天义，打车去找大部队。赤峰前一天刚刚下过雨，所以路极其难走，出租车走到一半就把我们放下了，换成了一个面包车。不过最后还是顺利的找到了大部队。</p>
+<p>找到后本想去漂流，但因为水流太急，只能回来。路过了一个水库，景色相当不错，照了几张照片，下来划了划船，拍了很不错的几张照片。</p>
+<p><img alt="" src="/static/pictures/graduation/lake.jpg" /></p>
+<p>下午一直在坐车，长达5个小时，比较无聊，期间体验了草原的大雨。晚上在赤峰市吃了蒙餐，很是丰盛。</p>
+<p>第二天去了草原，又是长达几个小时的车。不过草原的景色相当的漂亮，所谓的石林也确实有些怪石值得一看。</p>
+<p><img alt="" src="/static/pictures/graduation/grassland.jpg" /></p>
+<p>第三天回京。回程的火车是硬座，不过打牌、玩三国杀过的很快。晚上11点到北京，打车回宿舍时还发生了写小插曲，因为最后剩下了5个人一起走，所以只能打黑车，黑车要价很高，本来说好到五道口50，听说到清华之后忽然加到了70。我想起了一个划价的方法，让他先到五道口，快到了之后让他开，按每公里5块，给10块，开到2km我们就下车。于是他最后就妥协到东北门60，呵呵。</p>
+<h2>诸葛老师的实习生</h2>
+<p>回京之后就是各种没心没肺的玩，结果差点误了事。</p>
+<p>很久很久之前给诸葛老师发了封邮件申请实习生，一直没有音信，没想到竟然收到了老师的邮件让我过去面试。而当时竟然因为打游戏没及时收邮件给错过了。赶紧weibo上联系了诸葛老师，赶往FIT楼面试。</p>
+<p>面试的过程相当水，没有什么技术性的问题，只是了解了一下我的背景，最后结束时我都不敢相信就这么简单的就结束了。不过想来搞安全也确实不需要什么基础吧。之后认识诸葛老师手下的硕士生杨坤，之后就要靠这位学长带了，一个小巧合是杨坤学长毕设竟然用到了<a href="http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/">polipo</a>，这个东西的源码我是一直想看没看懂。。。</p>
+<p>第二天办了手续，成为了诸葛老师实验室的实习生，竟然还签了实习合同。合同只到13年底，也就是说要抓紧学习了！</p>
+<h2>毕业没有感</h2>
+<p>快毕业了，确实没什么感觉，除了感觉手续很复杂。毕业晚会那天女朋友正好来北京，我们一起看了晚会，算是个小惊喜。毕业晚会一点不煽情，和学生节没啥区别。对大学的同学还是很有感情的，比初中高中都要深一点，但是还是没有特别的舍不得的感觉，可能我就这样吧。</p>
+<p>有时候想想大学四年，好像什么都没有做，兴趣上转了一圈，又回到了当初不想搞的安全。成绩上拿不出什么能看的东西，只能说勉强够用。感情上倒还不错，是我当初怎么想不到的。给大学整体打分的话，和平时的各种考试一样，还算不错但离优秀很远。未来嘛，想想就头大。</p>
+<p>毕业了，要学的却又太多。最舍不得的还是学生的这个身份。</p></div>
+	<footer>
+		<span class="post-lable">Category:</span>
+		<abbr class="category">
+			<a href="./category/life.html">life</a>
+		</abbr>
+	</footer>
+	<hr />
+</article></li>
+<li class="posts"><article class="post hentry">
+	<header>
+		<h2 class="post-title" >
+			<a href="./post/start-blogging.html" rel="bookmark" title="Permalink to 这次真的开始写博客">这次真的开始写博客</a>
+		</h2>
+		<div class="post-info">
+			<span class="post-lable">Post in</span>
+			<abbr class="date" title="2013-06-23T11:03:50"> 
+				<a href="./archive/2013/Jun/index.html">Sun 23 June 2013 </a>
+			</abbr>
+			<!-- COMMENTS -->
+		</div>
+	</header>
+	<div class="summary"><h3>开头一般都是罗嗦又无趣的</h3>
+<p>记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。</p>
+<p>快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处</p>
+<ol>
+<li>
+<p>可以静下心了写一段完整的文章，而不是校内微博之类只写140字，140字可以写一时的心情，可以写一个笑话，但是绝对不能写对生活的思考，也不能介绍一个简单的技术。而这些不能写的才是应该记录下来的。单纯是为了给10年后的自己看，看到一篇有思考的文章和看到一句表达郁闷的140字也是完全不一样的。</p>
+</li>
+<li>
+<p>长文章才可以更好的交流，一言一语的聊天的效率很低，稍不注意主题就跑了。而且我一直觉得系统的表达出自己的思考，系统的听听别人的，这种交流是人生一大乐事。写博客、看博客应该是目前最好的方式了。</p>
+</li>
+<li>
+<p>前段时间给投了豆瓣的实习。发现自己在IT上花了很多时间，却没点成果，甚至连证明自己不是不懂技术的小白都很难。坚持写一个博客，能把自己技术积累拿出来给人看。</p>
+</li>
+</ol>
+<p>我觉得，一周一篇博客应该是比较好的，写着也不累，将来看起来也可以理清一段时间都做了什么。说起来，其实人生也就大概5000周嘛，每写一篇进度条就要走0.2%，想想还是挺快的。</p>
+<p>综上（写论文特别喜欢用这个词，哈哈），毕设答辩之后<strong>竟然</strong>没怎么玩游戏，折腾了大概两天的<a href="http://getpelican.com">pelican</a>，一个python实现的静态博客系统，移植了一个wordpress的主题，今后就打算这样在这里写了。打算专门写一篇文章来记录配置的过程。</p>
+<h3>应不应该用github写博客</h3>
+<p>这个其实是个问题，阮一峰当年介绍github pages的文章下面也有类似的讨论。有一些人觉得：</p>
+<ol>
+<li>
+<p>github上面写一些blog，特别是一些很技术没什么关系的，浪费人家空间，属于损人利己。有的人拿出当年sourceforge封中国ip的例子，说这种行为是不好的。甚至又拿出<em>蝗虫</em>的比喻。</p>
+</li>
+<li>
+<p>github是免费的空间，会招致一些<strong>别有用心</strong>的人，然后会导致github被墙，出于<em>保护</em>github的目的，反对别人建站。<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">阮一峰的博客</a>下面有很多这样的言论</p>
+</li>
+</ol>
+<p>我的一些想法：</p>
+<ol>
+<li>
+<p>github不是sf，github除了代码托管，更是程序员的<strong>社交网站</strong>，github pages是个很好的介绍自己的地方。sf的核心是project，静态页面是用来介绍project的，当然你用他写博客就不太合适。github是社交网站，我follow你完全有可能是觉得你这个人很有意思，所以我感觉搭建个博客介绍自己是可以的。</p>
+</li>
+<li>
+<p>第二个问题才是问题。这个东西确实难讲。一方面又觉得知识就是应该被分享的，只有分享了才有价值，一方面又觉得如果真的github被墙很难受，所以不想让太多非技术的人知道。哎，尽量分享知识又不要降低门槛吧。</p>
+</li>
+</ol></div>
+	<footer>
+		<span class="post-lable">Category:</span>
+		<abbr class="category">
+			<a href="./category/life.html">life</a>
+		</abbr>
+	</footer>
+	<hr />
+</article></li>
 </ul>
 <p class="paginator">
-        Page 1 / 3
+        Page 1 / 2
             <a href="./index2.html">&raquo;</a>
     </p>
         </section><!-- #content -->
@@ -346,7 +299,6 @@ c0077684:       1a00000a        bne     c00776b4 <span class="nt">&lt;sys</span>
                                             <li><a href="./category/life.html" >life </a></li>
                                             <li><a href="./category/non-tech.html" >Non-tech </a></li>
                                             <li><a href="./category/hack.html" >Hack </a></li>
-                                            <li><a href="./category/blue-lotus.html" >Blue-lotus </a></li>
                                     </ul>
             </section>
             
@@ -356,12 +308,11 @@ c0077684:       1a00000a        bne     c00776b4 <span class="nt">&lt;sys</span>
                 </div>
                 <div>
                                             <span><a href="./tag/imported-blog.html">imported blog</a></span>
-                                            <span><a href="./tag/non-tech.html">non-tech</a></span>
-                                            <span><a href="./tag/linux.html">linux</a></span>
                                             <span><a href="./tag/hack.html">Hack</a></span>
-                                            <span><a href="./tag/weekly.html">weekly</a></span>
-                                            <span><a href="./tag/security.html">security</a></span>
                                             <span><a href="./tag/.html"></a></span>
+                                            <span><a href="./tag/linux.html">linux</a></span>
+                                            <span><a href="./tag/weekly.html">weekly</a></span>
+                                            <span><a href="./tag/non-tech.html">non-tech</a></span>
                                     </div>
             </section>
             

@@ -1,6 +1,6 @@
 Title: 记下几个奇怪的Com组件
-Slug: lake2_bug
-Date: 2013-10-8 00:08:05
+Slug: some_interesting_com
+Date: 2009-10-08 09:32:35
 Tags: Hack, imported blog, 
 Category: Hack
 Author: ir193
