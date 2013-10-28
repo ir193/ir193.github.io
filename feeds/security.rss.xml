@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Yet another blog</title><link>http://ir193.github.io/</link><description></description><atom:link href="http://ir193.github.io/feeds/security.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 08 Oct 2013 18:14:12 +0800</lastBuildDate><item><title>cve-2013-2094 exploit and port</title><link>http://ir193.github.io/post/cve-2013-2094-exploit-and-port.html</link><description>&lt;h2&gt;cve-2013-2094漏洞原理分析与exploit移植&lt;/h2&gt;
+&lt;h3&gt;cve-2013-2094漏洞原理&lt;/h3&gt;
+&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
+&lt;p&gt;发生漏洞的是linux kernel中的perf event子系统，perf event是linux系统中提供性能分析接口的子系统，于2.6.31之后引入linux，之前被称为 Performance Counters for Linux (PCL)。通过syscall函数，用户可以调用perf event子系统提供的功能。由于perf event中的漏洞，用户可以通过精心构造的调用在任何内存地址写入数据，从而获得系统的最高权限。&lt;/p&gt;
+&lt;p&gt;引起cve-2013-2094漏洞的是位于&lt;a href="http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/kernel/events/core.c?id=8176cced706b5e5d15887584150764894e94e02f"&gt;kernel/events/core.c&lt;/a&gt;文件中的perf_swevent_init函数。当使用syscall打开perf_event的file descriptor时，该函数被调用。&lt;/p&gt;
+&lt;p&gt;在受影响的版本中，core.c关键部分内容如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;perf_swevent_init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;perf_event&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;event_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  &lt;span class="c1"&gt;//dangerous!&lt;/span&gt;
+
+    &lt;span class="cm"&gt;/*&lt;/span&gt;
+&lt;span class="cm"&gt;     * ....omit some code...&lt;/span&gt;
+&lt;span class="cm"&gt;     */&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="n"&gt;PERF_COUNT_SW_MAX&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ENOENT&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="cm"&gt;/*&lt;/span&gt;
+&lt;span class="cm"&gt;     * .........omit........&lt;/span&gt;
+&lt;span class="cm"&gt;     */&lt;/span&gt;
+
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;由于将event_id定义为了有符号型整数，而后面又只检查了event_id的上界，所以当值为负时，即可越过检查，继续执行后面的代码&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;err&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;swevent_hlist_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;atomic_inc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;perf_swevent_enabled&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+    &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;destroy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sw_perf_event_destroy&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;其中，static_key_slow_inc函数将某地址内容做inc。&lt;/p&gt;
+&lt;p&gt;当使用负数值的event_id调用时，perf_swevent_enabled[event_id]将指向内核空间，如，在Cent OS 64bit系统中，当event_id = -1调用时，perf_swevent_enabled[event_id]的地址为:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mh"&gt;0xfffffffffffffffe&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mh"&gt;0xffffffff81f360c0&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mh"&gt;0xFFFFFFFF81F360B8&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;该地址指向内核空间。&lt;/p&gt;
+&lt;p&gt;而当file descriptor关闭时，由于event_id定义为u64型，所以关闭时做dec时，地址指向的是用户空间。&lt;/p&gt;
+&lt;p&gt;所以当我们用负数值调用perf_event_open时，将可以在perf_swevent_enabled地址后面任意地址写入数据。&lt;/p&gt;
+&lt;h3&gt;x64下的利用思路&lt;/h3&gt;
+&lt;p&gt;x64架构下，该漏洞比较容易利用，需要的信息更少，exploit执行更快。方法简单来说是修改IDT中 int 4 的中断向量。x64的linux中，Offset hight bits和Offset middle bits是分别保存的，而将 int 4 的高位 0xffffffff 加1之后，中断向量将指向用户空间。而将shellcode放置在用户空间的这段内存上，即可获得系统最高权限。&lt;/p&gt;
+&lt;p&gt;具体来说，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;使用-1和-2调用，得到数组的偏移值。&lt;/p&gt;
+&lt;p&gt;使用-1和-2调用，在file descriptor被关闭后，将使 0x38000000 附近的内存中某两个值减1，通过搜索可以确定perf_swevent_enabled的编译值，并保存起来方便利用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将shellcode放入适当的用户空间内存中&lt;/p&gt;
+&lt;p&gt;使用 sidt 指令可以获得IDT的地址，然后使用 mmap 将 shellcode 放入适当的地址。使 IDT 中的中断向量高位+1之后落在shellcode上。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改shellcode&lt;/p&gt;
+&lt;p&gt;将 shellcode 中的 MARKER 修改为实际的 uid 和 gid 的保存地址。这样当shellcode运行时，即可找到 task_struct  和 thread_info 的地址，从而直接修改 real_cred 值，使当前进程获得 root 权限。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改 IDT&lt;/p&gt;
+&lt;p&gt;从 1 中得到的信息，和IDT 地址做计算，用计算好的负数值调用 perf_event_open ，可以使 int 4 的中断向量的高位 +1，从而指向shellcode。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;int 0x4&lt;/p&gt;
+&lt;p&gt;触发shellcode&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在shellcode中提权，并弹shell&lt;/p&gt;
+&lt;p&gt;修改 real_cred 获得root权限，并修复被修改的 IDT 和其他部分内存，&lt;/p&gt;
+&lt;p&gt;最后execl("/bin/bash", "-sh", NULL);&lt;/p&gt;
+&lt;p&gt;得到root权限的shell&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;移植到android系统&lt;/h3&gt;
+&lt;p&gt;Android采用了linux内核，且更新较linux在PC上的发行版慢。即使linux内核在2013年4月13日修复了该漏洞，原生Android系统和大量基于Android系统的第三方ROM仍然存在该漏洞。&lt;/p&gt;
+&lt;p&gt;在ARM linux下，该漏洞仍然存在，仍然可以通过负数的event_id将任意内存地址+1。&lt;/p&gt;
+&lt;p&gt;但由于手机使用的ARM架构和x64架构下，linux内核代码有所不同，该漏洞的利用方式也有所不同。&lt;/p&gt;
+&lt;p&gt;但是在ARM linux下，IDT的结构如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;_idt_entry&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;short&lt;/span&gt; &lt;span class="n"&gt;base_lo&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;short&lt;/span&gt; &lt;span class="n"&gt;sel&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;unused&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;short&lt;/span&gt; &lt;span class="n"&gt;base_hi&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="n"&gt;__attribute__&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;packed&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注意到base_hi是short型，而perf_swevent_enabled是int型的数组，所以无法将地址修改base_hi到用户空间地址。&lt;/p&gt;
+&lt;p&gt;所以在ARM下我们没有修改IDT，而是在linux内核中寻找合适的函数指针。反复调用perf_event_open，将函数指针的值加到用户能控制的地址，然后调用函数。ptmx_fops结构中的fsync函数指针被初始化为0，且不需要特殊的权限即可调用。&lt;/p&gt;
+&lt;p&gt;利用的基本思路是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cm"&gt;/* file_operations 结构fsync函数的偏移为56 */&lt;/span&gt;
+&lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pmtx_ops&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mh"&gt;56&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;payload&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;perf_table&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mh"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;perf_event_attr&lt;/span&gt; &lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;config&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;payload&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="cm"&gt;/* 反复调用将fsync的值修改为合适的值 */&lt;/span&gt;
+&lt;span class="n"&gt;syscall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__NR_perf_event_open&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mh"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mh"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mh"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mh"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+
+&lt;span class="cm"&gt;/* 调用 */&lt;/span&gt;
+&lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;ptmx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/dev/ptmx&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;O_RDWR&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;fsync&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ptmx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;但是，linux系统中单个进程能够打开的file descriptor数量是有限制的，所以需要fork出足够多的进程，反复修改。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Tue, 08 Oct 2013 18:14:12 +0800</pubDate><guid>tag:ir193.github.io,2013-10-08:post/cve-2013-2094-exploit-and-port.html</guid><category>Security Linux perf_event android</category></item></channel></rss>

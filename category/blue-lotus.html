@@ -9,7 +9,9 @@
     <link rel="stylesheet" id="responsive-style-css"  href='/theme/css/highlight.css' type="text/css" media="all" />
         <link href="http://ir193.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Yet another blog Full Atom Feed" />
             <link href="http://ir193.github.io/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Yet another blog Full RSS Feed" />
-                                
+                    <link href="http://ir193.github.io/feeds/blue-lotus.atom.xml" type="application/atom+xml" rel="alternate" title="Yet another blog Categories Atom Feed" />
+            <link href="http://ir193.github.io/feeds/blue-lotus.rss.xml" type="application/rss+xml" rel="alternate" title="Yet another blog Categories RSS Feed" />
+                
     </head>
 
 <body id="index" class="blog">
@@ -26,13 +28,61 @@
     </header>
     <section id="wrapper" class="clearfix">
         <section id="content" class="grid col-620" >
-                            <h4 class="content-archive">Articles tagged with <span style="color:rgb(0,102,204)"></span>: </h4>
+                            <h4 class="content-archive">Articles in the <span style="color:rgb(0,102,204)">Blue-lotus</span> category</h4>
                 <section class="breadcrumb-list">
-                    <a href="..">Blog</a> ››Tag: <a href="tag/.html"></a>
+                    <a href="..">Blog</a> ››Category: <a href="category/blue-lotus.html">Blue-lotus</a>
                 </section>
 
             
 <ul>
+<li class="posts"><article class="post hentry">
+	<header>
+		<h2 class="post-title" >
+			<a href="../post/cve-2013-2596.html" rel="bookmark" title="Permalink to cve-2013-2596 本地提权漏洞信息">cve-2013-2596 本地提权漏洞信息</a>
+		</h2>
+		<div class="post-info">
+			<span class="post-lable">Post in</span>
+			<abbr class="date" title="2013-10-17T13:10:58"> 
+				<a href="../archive/2013/Oct/index.html">Thu 17 October 2013 </a>
+			</abbr>
+			<!-- COMMENTS -->
+		</div>
+	</header>
+	<div class="summary"><h3>目前情况</h3>
+<p><a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596">cve-2013-2596</a>本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）</p>
+<p>网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 /drivers/video/fbmem.c。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。</p>
+<p>手上的手机，联想860i、华为荣耀四核，全部受这个漏洞影响。其中，联想860i不能成功提权但是重启，华为U9806成功提权。</p>
+<p>根据目前搜到的信息，最早发布的exploit是xda论坛上的<a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;page=4">motochopper</a>，只是作为工具发布，没有源代码和原理分析。</p>
+<p>另外xda论坛上有人根据<a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;page=4">motochopper</a>做逆向分析，猜测了原理。重新写出的利用工具[kernelchopper][http://forum.xda-developers.com/showthread.php?p=40873964]，开源，但比较不好用，只提供了写内存功能，需要自己写内存。</p>
+<h3>利用方法</h3>
+<p>[Patch地址][https://github.com/torvalds/linux/commit/fc9bbca8f650e5f738af8806317c0a041a48ae4a]
+目前都这个漏洞的原理还没有搞清楚。应该是个整数溢出漏洞，而且属于相当容易利用的。使用mmap可以直接将内核空间map到用户空间上。</p>
+<p>motochopper将内存映射之后，修改了当前用户的uid，从2000(shell)到0(root)。</p>
+<p>而xda论坛上介绍的方法是找到sys_setuid代码的内存地址，爆破。</p>
+<div class="highlight"><pre><span class="nx">c0077650</span> <span class="o">&lt;</span><span class="nb">sys_setuid</span><span class="o">&gt;</span><span class="p">:</span>
+<span class="nx">c0077650</span><span class="p">:</span>       <span class="nx">e92d40f8</span>        <span class="nb">push</span>    <span class="p">{</span><span class="nx">r3</span><span class="p">,</span> <span class="nx">r4</span><span class="p">,</span> <span class="nx">r5</span><span class="p">,</span> <span class="nx">r6</span><span class="p">,</span> <span class="nx">r7</span><span class="p">,</span> <span class="nx">lr</span><span class="p">}</span>
+<span class="nx">c0077654</span><span class="p">:</span>       <span class="nx">e1a05000</span>        <span class="nx">mov</span>     <span class="nx">r5</span><span class="p">,</span> <span class="nx">r0</span>
+<span class="nx">c0077658</span><span class="p">:</span>       <span class="nx">eb0040d6</span>        <span class="nx">bl</span>      <span class="nx">c00879b8</span> <span class="o">&lt;</span><span class="nx">prepare_creds</span><span class="o">&gt;</span>
+<span class="nx">c007765c</span><span class="p">:</span>       <span class="nx">e2504000</span>        <span class="nx">subs</span>    <span class="nx">r4</span><span class="p">,</span> <span class="nx">r0</span><span class="p">,</span> <span class="vi">#0</span>
+<span class="nx">c0077660</span><span class="p">:</span>       <span class="mi">0</span><span class="nx">a000027</span>        <span class="nx">beq</span>     <span class="nx">c0077704</span> <span class="o">&lt;</span><span class="nb">sys_setuid</span><span class="o">+</span><span class="mh">0xb4</span><span class="o">&gt;</span>
+<span class="nx">c0077664</span><span class="p">:</span>       <span class="nx">e1a0200d</span>        <span class="nx">mov</span>     <span class="nx">r2</span><span class="p">,</span> <span class="nx">sp</span>
+<span class="nx">c0077668</span><span class="p">:</span>       <span class="nx">e3c23d7f</span>        <span class="nx">bic</span>     <span class="nx">r3</span><span class="p">,</span> <span class="nx">r2</span><span class="p">,</span> <span class="vi">#8128</span>   <span class="p">;</span> <span class="mh">0x1fc0</span>
+<span class="nx">c007766c</span><span class="p">:</span>       <span class="nx">e3c3303f</span>        <span class="nx">bic</span>     <span class="nx">r3</span><span class="p">,</span> <span class="nx">r3</span><span class="p">,</span> <span class="vi">#63</span>     <span class="p">;</span> <span class="mh">0x3f</span>
+<span class="nx">c0077670</span><span class="p">:</span>       <span class="nx">e3a00007</span>        <span class="nx">mov</span>     <span class="nx">r0</span><span class="p">,</span> <span class="vi">#7</span>
+<span class="nx">c0077674</span><span class="p">:</span>       <span class="nx">e593300c</span>        <span class="nx">ldr</span>     <span class="nx">r3</span><span class="p">,</span> <span class="err">[</span><span class="nx">r3</span><span class="p">,</span> <span class="vi">#12</span><span class="cp">]</span>
+c0077678:       e59362fc        ldr     r6, <span class="cp">[</span><span class="nx">r3</span><span class="p">,</span> <span class="vi">#764</span><span class="cp">]</span>  ; 0x2fc
+c007767c:       ebffd80f        bl      c006d6c0 <span class="nt">&lt;nsown</span><span class="na">_capable</span><span class="nt">&gt;</span>
+c0077680:       e3500000        cmp     r0, #0
+c0077684:       1a00000a        bne     c00776b4 <span class="nt">&lt;sys</span><span class="na">_setuid</span><span class="err">+</span><span class="na">0x64</span><span class="nt">&gt;</span>
+</pre></div></div>
+	<footer>
+		<span class="post-lable">Category:</span>
+		<abbr class="category">
+			<a href="../category/blue-lotus.html">Blue-lotus</a>
+		</abbr>
+	</footer>
+	<hr />
+</article></li>
 <li class="posts"><article class="post hentry">
 	<header>
 		<h2 class="post-title" >
@@ -146,31 +196,6 @@ CM10.1.2确定已经patch</p>
 		<span class="post-lable">Category:</span>
 		<abbr class="category">
 			<a href="../category/blue-lotus.html">Blue-lotus</a>
-		</abbr>
-	</footer>
-	<hr />
-</article></li>
-<li class="posts"><article class="post hentry">
-	<header>
-		<h2 class="post-title" >
-			<a href="../post/hello-world.html" rel="bookmark" title="Permalink to Hello World">Hello World</a>
-		</h2>
-		<div class="post-info">
-			<span class="post-lable">Post in</span>
-			<abbr class="date" title="2010-12-03T10:20:00"> 
-				<a href="../archive/2010/Dec/index.html">Fri 03 December 2010 </a>
-			</abbr>
-			<!-- COMMENTS -->
-		</div>
-	</header>
-	<div class="summary"><h2>Hello World</h2>
-<p>This is the first post on github.</p>
-<p>The blog is base on <a href="http://www.getpelican.com/">pelican</a>.</p>
-<p>The theme is based on <a href="http://wordpress.org/themes/responsive">responsive</a> theme of wordpress</p></div>
-	<footer>
-		<span class="post-lable">Category:</span>
-		<abbr class="category">
-			<a href="../category/non-tech.html">Non-tech</a>
 		</abbr>
 	</footer>
 	<hr />

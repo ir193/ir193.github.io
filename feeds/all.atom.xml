@@ -1,5 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Yet another blog</title><link href="http://ir193.github.io/" rel="alternate"></link><link href="http://ir193.github.io/feeds/all.atom.xml" rel="self"></link><id>http://ir193.github.io/</id><updated>2013-07-11T21:33:26+08:00</updated><entry><title>快毕业了</title><link href="http://ir193.github.io/post/graduation-is-near.html" rel="alternate"></link><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Yet another blog</title><link href="http://ir193.github.io/" rel="alternate"></link><link href="http://ir193.github.io/feeds/all.atom.xml" rel="self"></link><id>http://ir193.github.io/</id><updated>2013-10-17T13:10:58+08:00</updated><entry><title>cve-2013-2596 本地提权漏洞信息</title><link href="http://ir193.github.io/post/cve-2013-2596.html" rel="alternate"></link><updated>2013-10-17T13:10:58+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-17:post/cve-2013-2596.html</id><summary type="html">&lt;h3&gt;目前情况&lt;/h3&gt;
+&lt;p&gt;&lt;a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596"&gt;cve-2013-2596&lt;/a&gt;本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）&lt;/p&gt;
+&lt;p&gt;网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 /drivers/video/fbmem.c。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。&lt;/p&gt;
+&lt;p&gt;手上的手机，联想860i、华为荣耀四核，全部受这个漏洞影响。其中，联想860i不能成功提权但是重启，华为U9806成功提权。&lt;/p&gt;
+&lt;p&gt;根据目前搜到的信息，最早发布的exploit是xda论坛上的&lt;a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;amp;page=4"&gt;motochopper&lt;/a&gt;，只是作为工具发布，没有源代码和原理分析。&lt;/p&gt;
+&lt;p&gt;另外xda论坛上有人根据&lt;a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;amp;page=4"&gt;motochopper&lt;/a&gt;做逆向分析，猜测了原理。重新写出的利用工具[kernelchopper][http://forum.xda-developers.com/showthread.php?p=40873964]，开源，但比较不好用，只提供了写内存功能，需要自己写内存。&lt;/p&gt;
+&lt;h3&gt;利用方法&lt;/h3&gt;
+&lt;p&gt;[Patch地址][https://github.com/torvalds/linux/commit/fc9bbca8f650e5f738af8806317c0a041a48ae4a]
+目前都这个漏洞的原理还没有搞清楚。应该是个整数溢出漏洞，而且属于相当容易利用的。使用mmap可以直接将内核空间map到用户空间上。&lt;/p&gt;
+&lt;p&gt;motochopper将内存映射之后，修改了当前用户的uid，从2000(shell)到0(root)。&lt;/p&gt;
+&lt;p&gt;而xda论坛上介绍的方法是找到sys_setuid代码的内存地址，爆破。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;c0077650&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nb"&gt;sys_setuid&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="nx"&gt;c0077650&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e92d40f8&lt;/span&gt;        &lt;span class="nb"&gt;push&lt;/span&gt;    &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r6&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;lr&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nx"&gt;c0077654&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e1a05000&lt;/span&gt;        &lt;span class="nx"&gt;mov&lt;/span&gt;     &lt;span class="nx"&gt;r5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r0&lt;/span&gt;
+&lt;span class="nx"&gt;c0077658&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;eb0040d6&lt;/span&gt;        &lt;span class="nx"&gt;bl&lt;/span&gt;      &lt;span class="nx"&gt;c00879b8&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;prepare_creds&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="nx"&gt;c007765c&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e2504000&lt;/span&gt;        &lt;span class="nx"&gt;subs&lt;/span&gt;    &lt;span class="nx"&gt;r4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#0&lt;/span&gt;
+&lt;span class="nx"&gt;c0077660&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nx"&gt;a000027&lt;/span&gt;        &lt;span class="nx"&gt;beq&lt;/span&gt;     &lt;span class="nx"&gt;c0077704&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nb"&gt;sys_setuid&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mh"&gt;0xb4&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="nx"&gt;c0077664&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e1a0200d&lt;/span&gt;        &lt;span class="nx"&gt;mov&lt;/span&gt;     &lt;span class="nx"&gt;r2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;sp&lt;/span&gt;
+&lt;span class="nx"&gt;c0077668&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e3c23d7f&lt;/span&gt;        &lt;span class="nx"&gt;bic&lt;/span&gt;     &lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#8128&lt;/span&gt;   &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="mh"&gt;0x1fc0&lt;/span&gt;
+&lt;span class="nx"&gt;c007766c&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e3c3303f&lt;/span&gt;        &lt;span class="nx"&gt;bic&lt;/span&gt;     &lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#63&lt;/span&gt;     &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="mh"&gt;0x3f&lt;/span&gt;
+&lt;span class="nx"&gt;c0077670&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e3a00007&lt;/span&gt;        &lt;span class="nx"&gt;mov&lt;/span&gt;     &lt;span class="nx"&gt;r0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#7&lt;/span&gt;
+&lt;span class="nx"&gt;c0077674&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;       &lt;span class="nx"&gt;e593300c&lt;/span&gt;        &lt;span class="nx"&gt;ldr&lt;/span&gt;     &lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="err"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#12&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;
+c0077678:       e59362fc        ldr     r6, &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#764&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;  ; 0x2fc
+c007767c:       ebffd80f        bl      c006d6c0 &lt;span class="nt"&gt;&amp;lt;nsown&lt;/span&gt;&lt;span class="na"&gt;_capable&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+c0077680:       e3500000        cmp     r0, #0
+c0077684:       1a00000a        bne     c00776b4 &lt;span class="nt"&gt;&amp;lt;sys&lt;/span&gt;&lt;span class="na"&gt;_setuid&lt;/span&gt;&lt;span class="err"&gt;+&lt;/span&gt;&lt;span class="na"&gt;0x64&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="security"></category></entry><entry><title>cve-2013-2094</title><link href="http://ir193.github.io/post/cve-2013-2094-on-CM10.1.html" rel="alternate"></link><updated>2013-09-12T13:56:38+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-09-12:post/cve-2013-2094-on-CM10.1.html</id><summary type="html">&lt;h2&gt;cve-2013-2094移植&lt;/h2&gt;
+&lt;p&gt;目前没有成功，但使用的内核版本应该是受影响的。&lt;/p&gt;
+&lt;p&gt;Nexus 4, Cyanogenmod 10.1.2-mako&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$adb&lt;/span&gt; shell uname -a
+Linux localhost 3.4.0-perf-ga66bc09 &lt;span class="c"&gt;#1 SMP PREEMPT Thu Jul 11 18:50:04 PDT 2013 armv7l GNU/Linux&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;尝试直接使用run_root_shell&lt;/p&gt;
+&lt;p&gt;因为Cyanogenmod自带了root权限，所以run root shell的数据库里是没有关于这个的信息的。需要手动定位几个地址&lt;/p&gt;
+&lt;p&gt;run root shell针对很多设备，预先保存了关键函数的地址。根据设备名称（ro.product.model）进行查找&lt;/p&gt;
+&lt;p&gt;在device_database.c中：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;supported_device&lt;/span&gt; &lt;span class="n"&gt;supported_devices&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;device_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DEVICE_TEST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;device&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Nexus 4&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;build_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;cm_mako-userdebug 4.2.2 JDQ39E eng.jenkins.20130711.184329 test-keys&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;prepare_kernel_cred_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc0089990&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit_creds_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc0089678&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remap_pfn_range_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc00f811c&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ptmx_fops_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc0ef74b0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="p"&gt;},&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;device_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DEVICE_NEXUS4_JDQ39&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;device&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Nexus 4&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;build_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;JDQ39&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;prepare_kernel_cred_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc0089990&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit_creds_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc0089678&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remap_pfn_range_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc00f8114&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ptmx_fops_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc0ef72f0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="p"&gt;},&lt;/span&gt;
+
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Android中，存在系统符号表/proc/kallsyms，可以直接查找。但是需要设置一下权限&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$echo&lt;/span&gt; 0 &amp;gt; /proc/sys/kernel/kptr_restrict sysctl
+&lt;span class="nv"&gt;$cat&lt;/span&gt; /proc/kallsyms
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;另一处是pref_event.c中，perf_swevent_enabled数组的地址&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;supported_device&lt;/span&gt; &lt;span class="n"&gt;supported_devices&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;DEVICE_TEST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;                   &lt;span class="mh"&gt;0xc0ee0230&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;DEVICE_NEXUS4_JDQ39&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;          &lt;span class="mh"&gt;0xc0ee0070&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;因为cve-2013-2094的exp需要知道perf_swevent_enabled数组的地址，用来做偏移&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;err&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;swevent_hlist_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;atomic_inc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;perf_swevent_enabled&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+    &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;destroy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sw_perf_event_destroy&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;perf_swevent_enabled也可以在/proc/kallsyms中找到。&lt;/p&gt;
+&lt;p&gt;但是目前还没有成功。。。&lt;/p&gt;
+&lt;p&gt;run_root_shell中使用了以下几个exploit&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;perf_swevent
+联想K860i手机，linux内核未启用perf_event
+CM10.1.2确定已经patch&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;acdb
+高通芯片漏洞
+联想K860i手机，使用三星Exynos芯片&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;fj_hdcp&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;fb_mem&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;需要修改地址&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;prepare_kernel_cred_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc00a2cc4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit_creds_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc00a28f8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remap_pfn_range_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc00ea344&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ptmx_fops_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0xc080b1ec&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+
+&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kernel_physical_offset_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x80108000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term=""></category></entry><entry><title>快毕业了</title><link href="http://ir193.github.io/post/graduation-is-near.html" rel="alternate"></link><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
 &lt;h2&gt;毕业旅行&lt;/h2&gt;
 &lt;p&gt;最近最重要的事就是跟同学去了毕业旅行。因为各种事情都赶到这个时间了，所以最后过程不可谓不艰辛。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="" src="/static/pictures/graduation/map.png" /&gt;&lt;/p&gt;
@@ -21,6 +142,108 @@
 &lt;p&gt;快毕业了，确实没什么感觉，除了感觉手续很复杂。毕业晚会那天女朋友正好来北京，我们一起看了晚会，算是个小惊喜。毕业晚会一点不煽情，和学生节没啥区别。对大学的同学还是很有感情的，比初中高中都要深一点，但是还是没有特别的舍不得的感觉，可能我就这样吧。&lt;/p&gt;
 &lt;p&gt;有时候想想大学四年，好像什么都没有做，兴趣上转了一圈，又回到了当初不想搞的安全。成绩上拿不出什么能看的东西，只能说勉强够用。感情上倒还不错，是我当初怎么想不到的。给大学整体打分的话，和平时的各种考试一样，还算不错但离优秀很远。未来嘛，想想就头大。&lt;/p&gt;
 &lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>这次真的开始写博客</title><link href="http://ir193.github.io/post/start-blogging.html" rel="alternate"></link><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:post/start-blogging.html</id><summary type="html">&lt;h3&gt;开头一般都是罗嗦又无趣的&lt;/h3&gt;
+&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
+&lt;p&gt;快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;可以静下心了写一段完整的文章，而不是校内微博之类只写140字，140字可以写一时的心情，可以写一个笑话，但是绝对不能写对生活的思考，也不能介绍一个简单的技术。而这些不能写的才是应该记录下来的。单纯是为了给10年后的自己看，看到一篇有思考的文章和看到一句表达郁闷的140字也是完全不一样的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;长文章才可以更好的交流，一言一语的聊天的效率很低，稍不注意主题就跑了。而且我一直觉得系统的表达出自己的思考，系统的听听别人的，这种交流是人生一大乐事。写博客、看博客应该是目前最好的方式了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;前段时间给投了豆瓣的实习。发现自己在IT上花了很多时间，却没点成果，甚至连证明自己不是不懂技术的小白都很难。坚持写一个博客，能把自己技术积累拿出来给人看。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我觉得，一周一篇博客应该是比较好的，写着也不累，将来看起来也可以理清一段时间都做了什么。说起来，其实人生也就大概5000周嘛，每写一篇进度条就要走0.2%，想想还是挺快的。&lt;/p&gt;
+&lt;p&gt;综上（写论文特别喜欢用这个词，哈哈），毕设答辩之后&lt;strong&gt;竟然&lt;/strong&gt;没怎么玩游戏，折腾了大概两天的&lt;a href="http://getpelican.com"&gt;pelican&lt;/a&gt;，一个python实现的静态博客系统，移植了一个wordpress的主题，今后就打算这样在这里写了。打算专门写一篇文章来记录配置的过程。&lt;/p&gt;
+&lt;h3&gt;应不应该用github写博客&lt;/h3&gt;
+&lt;p&gt;这个其实是个问题，阮一峰当年介绍github pages的文章下面也有类似的讨论。有一些人觉得：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;github上面写一些blog，特别是一些很技术没什么关系的，浪费人家空间，属于损人利己。有的人拿出当年sourceforge封中国ip的例子，说这种行为是不好的。甚至又拿出&lt;em&gt;蝗虫&lt;/em&gt;的比喻。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;github是免费的空间，会招致一些&lt;strong&gt;别有用心&lt;/strong&gt;的人，然后会导致github被墙，出于&lt;em&gt;保护&lt;/em&gt;github的目的，反对别人建站。&lt;a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html"&gt;阮一峰的博客&lt;/a&gt;下面有很多这样的言论&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我的一些想法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;github不是sf，github除了代码托管，更是程序员的&lt;strong&gt;社交网站&lt;/strong&gt;，github pages是个很好的介绍自己的地方。sf的核心是project，静态页面是用来介绍project的，当然你用他写博客就不太合适。github是社交网站，我follow你完全有可能是觉得你这个人很有意思，所以我感觉搭建个博客介绍自己是可以的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第二个问题才是问题。这个东西确实难讲。一方面又觉得知识就是应该被分享的，只有分享了才有价值，一方面又觉得如果真的github被墙很难受，所以不想让太多非技术的人知道。哎，尽量分享知识又不要降低门槛吧。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>这次真的开始写博客</title><link href="http://ir193.github.io/post/start-blogging.html" rel="alternate"></link><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:post/start-blogging.html</id><summary type="html">&lt;h3&gt;开头一般都是罗嗦又无趣的&lt;/h3&gt;
+&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
+&lt;p&gt;快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;可以静下心了写一段完整的文章，而不是校内微博之类只写140字，140字可以写一时的心情，可以写一个笑话，但是绝对不能写对生活的思考，也不能介绍一个简单的技术。而这些不能写的才是应该记录下来的。单纯是为了给10年后的自己看，看到一篇有思考的文章和看到一句表达郁闷的140字也是完全不一样的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;长文章才可以更好的交流，一言一语的聊天的效率很低，稍不注意主题就跑了。而且我一直觉得系统的表达出自己的思考，系统的听听别人的，这种交流是人生一大乐事。写博客、看博客应该是目前最好的方式了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;前段时间给投了豆瓣的实习。发现自己在IT上花了很多时间，却没点成果，甚至连证明自己不是不懂技术的小白都很难。坚持写一个博客，能把自己技术积累拿出来给人看。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我觉得，一周一篇博客应该是比较好的，写着也不累，将来看起来也可以理清一段时间都做了什么。说起来，其实人生也就大概5000周嘛，每写一篇进度条就要走0.2%，想想还是挺快的。&lt;/p&gt;
+&lt;p&gt;综上（写论文特别喜欢用这个词，哈哈），毕设答辩之后&lt;strong&gt;竟然&lt;/strong&gt;没怎么玩游戏，折腾了大概两天的&lt;a href="http://getpelican.com"&gt;pelican&lt;/a&gt;，一个python实现的静态博客系统，移植了一个wordpress的主题，今后就打算这样在这里写了。打算专门写一篇文章来记录配置的过程。&lt;/p&gt;
+&lt;h3&gt;应不应该用github写博客&lt;/h3&gt;
+&lt;p&gt;这个其实是个问题，阮一峰当年介绍github pages的文章下面也有类似的讨论。有一些人觉得：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;github上面写一些blog，特别是一些很技术没什么关系的，浪费人家空间，属于损人利己。有的人拿出当年sourceforge封中国ip的例子，说这种行为是不好的。甚至又拿出&lt;em&gt;蝗虫&lt;/em&gt;的比喻。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;github是免费的空间，会招致一些&lt;strong&gt;别有用心&lt;/strong&gt;的人，然后会导致github被墙，出于&lt;em&gt;保护&lt;/em&gt;github的目的，反对别人建站。&lt;a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html"&gt;阮一峰的博客&lt;/a&gt;下面有很多这样的言论&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我的一些想法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;github不是sf，github除了代码托管，更是程序员的&lt;strong&gt;社交网站&lt;/strong&gt;，github pages是个很好的介绍自己的地方。sf的核心是project，静态页面是用来介绍project的，当然你用他写博客就不太合适。github是社交网站，我follow你完全有可能是觉得你这个人很有意思，所以我感觉搭建个博客介绍自己是可以的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第二个问题才是问题。这个东西确实难讲。一方面又觉得知识就是应该被分享的，只有分享了才有价值，一方面又觉得如果真的github被墙很难受，所以不想让太多非技术的人知道。哎，尽量分享知识又不要降低门槛吧。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>这次真的开始写博客</title><link href="http://ir193.github.io/post/start-blogging.html" rel="alternate"></link><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:post/start-blogging.html</id><summary type="html">&lt;h3&gt;开头一般都是罗嗦又无趣的&lt;/h3&gt;
+&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
+&lt;p&gt;快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;可以静下心了写一段完整的文章，而不是校内微博之类只写140字，140字可以写一时的心情，可以写一个笑话，但是绝对不能写对生活的思考，也不能介绍一个简单的技术。而这些不能写的才是应该记录下来的。单纯是为了给10年后的自己看，看到一篇有思考的文章和看到一句表达郁闷的140字也是完全不一样的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;长文章才可以更好的交流，一言一语的聊天的效率很低，稍不注意主题就跑了。而且我一直觉得系统的表达出自己的思考，系统的听听别人的，这种交流是人生一大乐事。写博客、看博客应该是目前最好的方式了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;前段时间给投了豆瓣的实习。发现自己在IT上花了很多时间，却没点成果，甚至连证明自己不是不懂技术的小白都很难。坚持写一个博客，能把自己技术积累拿出来给人看。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我觉得，一周一篇博客应该是比较好的，写着也不累，将来看起来也可以理清一段时间都做了什么。说起来，其实人生也就大概5000周嘛，每写一篇进度条就要走0.2%，想想还是挺快的。&lt;/p&gt;
+&lt;p&gt;综上（写论文特别喜欢用这个词，哈哈），毕设答辩之后&lt;strong&gt;竟然&lt;/strong&gt;没怎么玩游戏，折腾了大概两天的&lt;a href="http://getpelican.com"&gt;pelican&lt;/a&gt;，一个python实现的静态博客系统，移植了一个wordpress的主题，今后就打算这样在这里写了。打算专门写一篇文章来记录配置的过程。&lt;/p&gt;
+&lt;h3&gt;应不应该用github写博客&lt;/h3&gt;
+&lt;p&gt;这个其实是个问题，阮一峰当年介绍github pages的文章下面也有类似的讨论。有一些人觉得：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;github上面写一些blog，特别是一些很技术没什么关系的，浪费人家空间，属于损人利己。有的人拿出当年sourceforge封中国ip的例子，说这种行为是不好的。甚至又拿出&lt;em&gt;蝗虫&lt;/em&gt;的比喻。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;github是免费的空间，会招致一些&lt;strong&gt;别有用心&lt;/strong&gt;的人，然后会导致github被墙，出于&lt;em&gt;保护&lt;/em&gt;github的目的，反对别人建站。&lt;a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html"&gt;阮一峰的博客&lt;/a&gt;下面有很多这样的言论&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我的一些想法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;github不是sf，github除了代码托管，更是程序员的&lt;strong&gt;社交网站&lt;/strong&gt;，github pages是个很好的介绍自己的地方。sf的核心是project，静态页面是用来介绍project的，当然你用他写博客就不太合适。github是社交网站，我follow你完全有可能是觉得你这个人很有意思，所以我感觉搭建个博客介绍自己是可以的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第二个问题才是问题。这个东西确实难讲。一方面又觉得知识就是应该被分享的，只有分享了才有价值，一方面又觉得如果真的github被墙很难受，所以不想让太多非技术的人知道。哎，尽量分享知识又不要降低门槛吧。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>这次真的开始写博客</title><link href="http://ir193.github.io/post/start-blogging.html" rel="alternate"></link><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:post/start-blogging.html</id><summary type="html">&lt;h3&gt;开头一般都是罗嗦又无趣的&lt;/h3&gt;
 &lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
 &lt;p&gt;快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处&lt;/p&gt;
 &lt;ol&gt;
