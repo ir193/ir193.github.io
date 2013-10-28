@@ -25,7 +25,10 @@ c0077678:       e59362fc        ldr     r6, &lt;span class="cp"&gt;[&lt;/span&gt
 c007767c:       ebffd80f        bl      c006d6c0 &lt;span class="nt"&gt;&amp;lt;nsown&lt;/span&gt;&lt;span class="na"&gt;_capable&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
 c0077680:       e3500000        cmp     r0, #0
 c0077684:       1a00000a        bne     c00776b4 &lt;span class="nt"&gt;&amp;lt;sys&lt;/span&gt;&lt;span class="na"&gt;_setuid&lt;/span&gt;&lt;span class="err"&gt;+&lt;/span&gt;&lt;span class="na"&gt;0x64&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 17 Oct 2013 13:10:58 +0800</pubDate><guid>tag:ir193.github.io,2013-10-17:post/cve-2013-2596.html</guid><category>security</category></item><item><title>cve-2013-2094</title><link>http://ir193.github.io/post/cve-2013-2094-on-CM10.1.html</link><description>&lt;h2&gt;cve-2013-2094移植&lt;/h2&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;另一篇分析http://securityblog.org/2013/04/30/SE-Android-and-the-motochopper-exploit/&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 17 Oct 2013 13:10:58 +0800</pubDate><guid>tag:ir193.github.io,2013-10-17:post/cve-2013-2596.html</guid><category>security</category></item><item><title>cve-2013-2094</title><link>http://ir193.github.io/post/cve-2013-2094-on-CM10.1.html</link><description>&lt;h2&gt;cve-2013-2094移植&lt;/h2&gt;
 &lt;p&gt;目前没有成功，但使用的内核版本应该是受影响的。&lt;/p&gt;
 &lt;p&gt;Nexus 4, Cyanogenmod 10.1.2-mako&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$adb&lt;/span&gt; shell uname -a
