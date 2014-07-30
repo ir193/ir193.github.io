@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Yet another blog</title><link>http://ir193.github.io/</link><description></description><atom:link href="http://ir193.github.io/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Wed, 09 Oct 2013 01:06:33 +0800</lastBuildDate><item><title>cve-2013-2094漏洞原理分析与移植</title><link>http://ir193.github.io/post/cve-2013-2094.html</link><description>&lt;h3&gt;cve-2013-2094漏洞原理&lt;/h3&gt;
-&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Another Blog</title><link>http://ir193.github.io/</link><description></description><atom:link href="http://ir193.github.io/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Wed, 09 Oct 2013 01:06:33 +0800</lastBuildDate><item><title>cve-2013-2094</title><link>http://ir193.github.io/post/cve-2013-2094.html</link><description>&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
 &lt;p&gt;发生漏洞的是linux kernel中的perf event子系统，perf event是linux系统中提供性能分析接口的子系统，于2.6.31之后引入linux，之前被称为 Performance Counters for Linux (PCL)。通过syscall函数，用户可以调用perf event子系统提供的功能。由于perf event中的漏洞，用户可以通过精心构造的调用在任何内存地址写入数据，从而获得系统的最高权限。&lt;/p&gt;
 &lt;p&gt;引起cve-2013-2094漏洞的是位于&lt;a href="http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/kernel/events/core.c?id=8176cced706b5e5d15887584150764894e94e02f"&gt;kernel/events/core.c&lt;/a&gt;文件中的perf_swevent_init函数。当使用syscall打开perf_event的file descriptor时，该函数被调用。&lt;/p&gt;
 &lt;p&gt;在受影响的版本中，core.c关键部分内容如下：&lt;/p&gt;
@@ -140,8 +139,7 @@
 &lt;h2&gt;毕业没有感&lt;/h2&gt;
 &lt;p&gt;快毕业了，确实没什么感觉，除了感觉手续很复杂。毕业晚会那天女朋友正好来北京，我们一起看了晚会，算是个小惊喜。毕业晚会一点不煽情，和学生节没啥区别。对大学的同学还是很有感情的，比初中高中都要深一点，但是还是没有特别的舍不得的感觉，可能我就这样吧。&lt;/p&gt;
 &lt;p&gt;有时候想想大学四年，好像什么都没有做，兴趣上转了一圈，又回到了当初不想搞的安全。成绩上拿不出什么能看的东西，只能说勉强够用。感情上倒还不错，是我当初怎么想不到的。给大学整体打分的话，和平时的各种考试一样，还算不错但离优秀很远。未来嘛，想想就头大。&lt;/p&gt;
-&lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 11 Jul 2013 21:33:26 +0800</pubDate><guid>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</guid><category>non-tech</category><category>weekly</category></item><item><title>这次真的开始写博客</title><link>http://ir193.github.io/post/start-blogging.html</link><description>&lt;h3&gt;开头一般都是罗嗦又无趣的&lt;/h3&gt;
-&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
+&lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 11 Jul 2013 21:33:26 +0800</pubDate><guid>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</guid><category>non-tech</category><category>weekly</category></item><item><title>这次真的开始写博客</title><link>http://ir193.github.io/post/start-blogging.html</link><description>&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
 &lt;p&gt;快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;

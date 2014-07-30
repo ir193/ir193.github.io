@@ -6,7 +6,6 @@ Category: life
 Author: ir193
 
 
-###开头一般都是罗嗦又无趣的
 
 记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。
 
