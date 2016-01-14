@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Another Blog</title><link>http://ir193.github.io/</link><description></description><atom:link href="http://ir193.github.io/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Wed, 09 Oct 2013 01:06:33 +0800</lastBuildDate><item><title>cve-2013-2094</title><link>http://ir193.github.io/post/cve-2013-2094.html</link><description>&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="http://ir193.github.io/" rel="alternate"></link><link href="http://ir193.github.io/feeds/ir193.atom.xml" rel="self"></link><id>http://ir193.github.io/</id><updated>2013-10-09T01:06:33+08:00</updated><entry><title>cve-2013-2094</title><link href="http://ir193.github.io/post/cve-2013-2094.html" rel="alternate"></link><updated>2013-10-09T01:06:33+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-09:post/cve-2013-2094.html</id><summary type="html">&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
 &lt;p&gt;发生漏洞的是linux kernel中的perf event子系统，perf event是linux系统中提供性能分析接口的子系统，于2.6.31之后引入linux，之前被称为 Performance Counters for Linux (PCL)。通过syscall函数，用户可以调用perf event子系统提供的功能。由于perf event中的漏洞，用户可以通过精心构造的调用在任何内存地址写入数据，从而获得系统的最高权限。&lt;/p&gt;
 &lt;p&gt;引起cve-2013-2094漏洞的是位于&lt;a href="http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/kernel/events/core.c?id=8176cced706b5e5d15887584150764894e94e02f"&gt;kernel/events/core.c&lt;/a&gt;文件中的perf_swevent_init函数。当使用syscall打开perf_event的file descriptor时，该函数被调用。&lt;/p&gt;
 &lt;p&gt;在受影响的版本中，core.c关键部分内容如下：&lt;/p&gt;
@@ -118,7 +118,7 @@ fsync&lt;span class="o"&gt;(&lt;/span&gt;ptmx&lt;span class="o"&gt;)&lt;/span&gt
 &lt;p&gt;|| Nexus 4 官方Rom 4.2.1|| 成功 ||
 || Nexus 4 Cyanogenmod 10.1.2|| 内核已修补 ||
 || Lenove 860i 官方ROM || 内核不支持perf_event ||
-|| Huawei U9508 官方ROM || 内核不支持perf_event ||&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Wed, 09 Oct 2013 01:06:33 +0800</pubDate><guid>tag:ir193.github.io,2013-10-09:post/cve-2013-2094.html</guid><category>Hack</category><category>linux</category></item><item><title>快毕业了</title><link>http://ir193.github.io/post/graduation-is-near.html</link><description>&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
+|| Huawei U9508 官方ROM || 内核不支持perf_event ||&lt;/p&gt;</summary><category term="Hack"></category><category term="linux"></category></entry><entry><title>快毕业了</title><link href="http://ir193.github.io/post/graduation-is-near.html" rel="alternate"></link><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
 &lt;h2&gt;毕业旅行&lt;/h2&gt;
 &lt;p&gt;最近最重要的事就是跟同学去了毕业旅行。因为各种事情都赶到这个时间了，所以最后过程不可谓不艰辛。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="" src="/pictures/graduation/map.png" /&gt;&lt;/p&gt;
@@ -139,7 +139,7 @@ fsync&lt;span class="o"&gt;(&lt;/span&gt;ptmx&lt;span class="o"&gt;)&lt;/span&gt
 &lt;h2&gt;毕业没有感&lt;/h2&gt;
 &lt;p&gt;快毕业了，确实没什么感觉，除了感觉手续很复杂。毕业晚会那天女朋友正好来北京，我们一起看了晚会，算是个小惊喜。毕业晚会一点不煽情，和学生节没啥区别。对大学的同学还是很有感情的，比初中高中都要深一点，但是还是没有特别的舍不得的感觉，可能我就这样吧。&lt;/p&gt;
 &lt;p&gt;有时候想想大学四年，好像什么都没有做，兴趣上转了一圈，又回到了当初不想搞的安全。成绩上拿不出什么能看的东西，只能说勉强够用。感情上倒还不错，是我当初怎么想不到的。给大学整体打分的话，和平时的各种考试一样，还算不错但离优秀很远。未来嘛，想想就头大。&lt;/p&gt;
-&lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 11 Jul 2013 21:33:26 +0800</pubDate><guid>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</guid><category>non-tech</category><category>weekly</category></item><item><title>这次真的开始写博客</title><link>http://ir193.github.io/post/start-blogging.html</link><description>&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
+&lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>这次真的开始写博客</title><link href="http://ir193.github.io/post/start-blogging.html" rel="alternate"></link><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:post/start-blogging.html</id><summary type="html">&lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
 &lt;p&gt;快毕业了，现在忽然觉得坚持写博客是个好主意。主要几个好处&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -172,10 +172,10 @@ fsync&lt;span class="o"&gt;(&lt;/span&gt;ptmx&lt;span class="o"&gt;)&lt;/span&gt
 &lt;li&gt;
 &lt;p&gt;第二个问题才是问题。这个东西确实难讲。一方面又觉得知识就是应该被分享的，只有分享了才有价值，一方面又觉得如果真的github被墙很难受，所以不想让太多非技术的人知道。哎，尽量分享知识又不要降低门槛吧。&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Sun, 23 Jun 2013 11:03:50 +0800</pubDate><guid>tag:ir193.github.io,2013-06-23:post/start-blogging.html</guid><category>non-tech</category><category>weekly</category></item><item><title>Hello World</title><link>http://ir193.github.io/post/hello-world.html</link><description>&lt;h2&gt;Hello World&lt;/h2&gt;
+&lt;/ol&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>Hello World</title><link href="http://ir193.github.io/post/hello-world.html" rel="alternate"></link><updated>2010-12-03T10:20:00+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2010-12-03:post/hello-world.html</id><summary type="html">&lt;h2&gt;Hello World&lt;/h2&gt;
 &lt;p&gt;This is the first post on github.&lt;/p&gt;
 &lt;p&gt;The blog is base on &lt;a href="http://www.getpelican.com/"&gt;pelican&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;The theme is based on &lt;a href="http://wordpress.org/themes/responsive"&gt;responsive&lt;/a&gt; theme of wordpress&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Fri, 03 Dec 2010 10:20:00 +0800</pubDate><guid>tag:ir193.github.io,2010-12-03:post/hello-world.html</guid></item><item><title>几个雷客图ASP站长安全助手的小问题</title><link>http://ir193.github.io/post/lake2_bug.html</link><description>&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的开放实验室写的。&lt;/p&gt;
+&lt;p&gt;The theme is based on &lt;a href="http://wordpress.org/themes/responsive"&gt;responsive&lt;/a&gt; theme of wordpress&lt;/p&gt;</summary></entry><entry><title>几个雷客图ASP站长安全助手的小问题</title><link href="http://ir193.github.io/post/lake2_bug.html" rel="alternate"></link><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:post/lake2_bug.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的开放实验室写的。&lt;/p&gt;
 &lt;p&gt;从电脑里翻出来这个真是百感交集啊，现在来看这篇文章，这些小trick确实后来也没有听说过。当然这与asp的没落、我不再关注web安全有着不小关系。&lt;/p&gt;
 &lt;p&gt;大学四年，安全方面的技术确实没有积累，是根本没有看。而现在在诸葛老师的实验室，似乎绕了一个圈子又回到了开始。而一圈走下来却发现自己没有留下什么。确实有些伤感。&lt;/p&gt;
 &lt;h4&gt;以下是导入的正文&lt;/h4&gt;
@@ -248,7 +248,7 @@ owshl[&amp;quot;exec&amp;quot;]
 
 
 &lt;p&gt;雷客图总的来说是一个相当优秀的ASP木马查杀工具，其中有很多东西值得学习。我小菜不敢挑战lake2大侠，无非是在被忽视的地方小打小闹一下。最后，希望lake2多开发一些工具，多公布几个漏洞。&lt;/p&gt;
-&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 08 Oct 2009 09:32:35 +0800</pubDate><guid>tag:ir193.github.io,2009-10-08:post/lake2_bug.html</guid><category>Hack</category><category>imported blog</category></item><item><title>记下几个奇怪的Com组件</title><link>http://ir193.github.io/post/some_interesting_com.html</link><description>&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</summary><category term="Hack"></category><category term="imported blog"></category></entry><entry><title>记下几个奇怪的Com组件</title><link href="http://ir193.github.io/post/some_interesting_com.html" rel="alternate"></link><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:post/some_interesting_com.html</id><summary type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
 &lt;hr /&gt;
 &lt;p&gt;这篇Blog应该也是09年暑假前后写下的，存在了U盘里然后一直没有发布。&lt;/p&gt;
 &lt;p&gt;当时写这篇文章的原因是在写一个asp的webshell，asp的全部功能几乎都要靠ActiveX完成，所以当时几乎把系统注册表里CLASSID下的全部键值都试过了一遍，只是想找找有没有不常见的，提供合适功能的组件。最后当然是没有啦。&lt;/p&gt;
@@ -376,4 +376,4 @@ Merlin.Hide
 
 
 &lt;/li&gt;
-&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">ir193</dc:creator><pubDate>Thu, 08 Oct 2009 09:32:35 +0800</pubDate><guid>tag:ir193.github.io,2009-10-08:post/some_interesting_com.html</guid><category>Hack</category><category>imported blog</category></item></channel></rss>
+&lt;/ol&gt;</summary><category term="Hack"></category><category term="imported blog"></category></entry></feed>

@@ -1,9 +1,9 @@
 <!doctype html>
-<html class="no-js" lang="zh-CN">
+<html class="no-js" lang="zh-cn">
 <head>
     <meta charset="utf-8">
     <title>Another Blog</title>
-    
+
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
     <meta name="description" content="yet another blog.">
 
@@ -18,12 +18,12 @@
     <link rel="stylesheet" href="/theme/css/ty.css" type="text/css" media="all" />
     <link rel="stylesheet" href="/theme/css/highlight.css" type="text/css" media="all" />
 
-        <link href="http://ir193.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Full Atom Feed" />
-            <link href="http://ir193.github.io/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Full RSS Feed" />
-                    <link href="http://ir193.github.io/feeds/hack.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Categories Atom Feed" />
-            <link href="http://ir193.github.io/feeds/hack.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Categories RSS Feed" />
-                
-    </head>
+    <link href="http://ir193.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Full Atom Feed" />
+    <link href="http://ir193.github.io/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Full RSS Feed" />
+    <link href="http://ir193.github.io/feeds/hack.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Categories Atom Feed" />
+    <link href="http://ir193.github.io/feeds/hack.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Categories RSS Feed" />
+    
+</head>
 <body>
 
 <div id="layout" class="ty pure-g">
@@ -31,17 +31,17 @@
         <div class="header">
             <nav class="navi">
                 <span><a href="..">Home</a></span>
-                            <span class="no-mobile"><a href="../category/life.html">life</a></span>
-                            <span class="no-mobile"><a href="../category/non-tech.html">Non-tech</a></span>
-                            <span class="no-mobile"><a href="../category/hack.html">Hack</a></span>
-                            <span><a href="#">Projects</a></span>
+                <span class="no-mobile"><a href="../category/non-tech.html">Non-tech</a></span>
+                <span class="no-mobile"><a href="../category/life.html">life</a></span>
+                <span class="no-mobile"><a href="../category/hack.html">Hack</a></span>
+                <span><a href="#">Projects</a></span>
                 <span><a href="../pages/about.html">About</a></span>
             </nav>
         </div>
     </div>
     <div class="content pure-u-1 pure-u-md-10-24">
         <div class="artical">
-            <artical class="post post-preview">
+<artical class="post post-preview">
     <div class="post-header">
         <h2 class="post-title">
             <a href="../post/some_interesting_com.html" rel="bookmark" title="记下几个奇怪的Com组件">
@@ -62,12 +62,12 @@
 <li>
 <p>compatUI.Util</p>
 <p>除了Wscript.Shell和shell.application以外，这个组件也能运行程序，但是不知道这个组件是不是系统自带的。原型是：</p>
-<div class="highlight"><pre><span class="n">Function</span>  <span class="n">RunApplication</span><span class="p">(</span><span class="n">pLayers</span><span class="o">:</span><span class="n">BSTR</span><span class="p">;</span> <span class="n">pszCmdLine</span><span class="o">:</span><span class="n">BSTR</span><span class="p">;</span> <span class="n">bEnableLog</span><span class="o">:</span><span class="n">I4</span><span class="p">)</span>
+<div class="highlight"><pre><span class="nt">Function</span><span class="err"> </span> <span class="nt">RunApplication</span><span class="o">(</span><span class="nt">pLayers</span><span class="nd">:BSTR</span><span class="o">;</span> <span class="nt">pszCmdLine</span><span class="nd">:BSTR</span><span class="o">;</span> <span class="nt">bEnableLog</span><span class="nd">:I4</span><span class="o">)</span>
 </pre></div>
 
 
 <p>使用方法：</p>
-<div class="highlight"><pre><span class="n">ocu</span><span class="p">.</span><span class="n">Runapplication</span> <span class="s">&quot;&quot;</span><span class="p">,</span><span class="s">&quot;c:\windows\system32\cmd.exe&quot;</span><span class="p">,</span><span class="n">FALSE</span>
+<div class="highlight"><pre>ocu.Runapplication &quot;&quot;,&quot;c:\windows\system32\cmd.exe&quot;,FALSE
 </pre></div>
 
 
@@ -78,37 +78,37 @@
 <p>MakeCAB.MakeCAB</p>
 <p>这个组件用来打CAB包，不过好像没什么用，因为XP才带这个组件，但XP自带Zip打包功能，没人会用这个吧。想想唯一有用的是向没有压缩软件的2k系统复制东西，因为2k带expand命令，可以解压。</p>
 <p>以下是简单的Vbs脚本，可以将文件夹打包成CAB包</p>
-<div class="highlight"><pre><span class="n">sPath</span> <span class="o">=</span> <span class="n">input</span><span class="p">(</span><span class="s">&quot;请输入要打包的文件夹路径&quot;</span><span class="p">)</span>
-<span class="n">sCab</span> <span class="o">=</span> <span class="n">input</span><span class="p">(</span><span class="s">&quot;请输入要CAB文件夹保存路径&quot;</span><span class="p">)</span>
-<span class="n">set</span> <span class="n">ocab</span><span class="o">=</span><span class="n">createobject</span><span class="p">(</span><span class="s">&quot;MakeCAB.MakeCAB&quot;</span><span class="p">)</span>
-<span class="n">ocab</span><span class="p">.</span><span class="n">CreateCab</span> <span class="n">sCAB</span><span class="p">,</span><span class="n">True</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">True</span>
-<span class="n">packit</span> <span class="n">sPath</span><span class="p">,</span><span class="s">&quot;&quot;</span>
-<span class="n">ocab</span><span class="p">.</span><span class="n">CloseCAB</span>
-<span class="k">if</span> <span class="n">NOT</span> <span class="n">Err</span> <span class="n">Then</span>
-    <span class="n">wscript</span><span class="p">.</span><span class="n">echo</span> <span class="s">&quot;打包成功&quot;</span>
-<span class="k">else</span>
-    <span class="n">wscript</span><span class="p">.</span><span class="n">echo</span> <span class="s">&quot;有文件没能打入压缩包&quot;</span>
-<span class="n">End</span> <span class="k">if</span>
+<div class="highlight"><pre>sPath = input(&quot;请输入要打包的文件夹路径&quot;)
+sCab = input(&quot;请输入要CAB文件夹保存路径&quot;)
+set ocab=createobject(&quot;MakeCAB.MakeCAB&quot;)
+ocab.CreateCab sCAB,True,0,True
+packit sPath,&quot;&quot;
+ocab.CloseCAB
+if NOT Err Then
+    wscript.echo &quot;打包成功&quot;
+else
+    wscript.echo &quot;有文件没能打入压缩包&quot;
+End if
 
-<span class="n">SUB</span> <span class="n">packit</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">)</span>
-    <span class="n">On</span> <span class="n">Error</span> <span class="n">Resume</span> <span class="n">next</span>
-    <span class="k">if</span> <span class="n">Right</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s"> s1=s1 &amp;amp; &quot;</span><span class="err">\</span><span class="s">&quot;</span>
-    <span class="k">if</span> <span class="n">Right</span><span class="p">(</span><span class="n">s2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="s">&quot;&quot;</span> <span class="n">s2</span><span class="o">=</span><span class="n">s2</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="s">&quot;</span><span class="se">\&quot;</span>
-    <span class="err">&#39;注释</span><span class="o">:</span><span class="n">S1</span><span class="err">文件路径</span><span class="p">,</span><span class="n">S2</span><span class="err">在</span><span class="n">CAB</span><span class="err">包内的路径</span>
-    <span class="n">set</span> <span class="n">ofso</span><span class="o">=</span><span class="n">createobject</span><span class="p">(</span><span class="s">&quot;Scripting.FileSystemObject&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ofso</span><span class="p">.</span><span class="n">FolderExists</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="n">then</span>
-        <span class="n">set</span> <span class="n">ofolder</span><span class="o">=</span><span class="n">ofso</span><span class="p">.</span><span class="n">GetFolder</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
-        <span class="n">For</span> <span class="n">each</span> <span class="n">oSubfolder</span> <span class="n">in</span> <span class="n">ofolder</span><span class="p">.</span><span class="n">Subfolders</span>
-            <span class="n">packit</span> <span class="n">s1</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">oSubfolder</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span><span class="n">s2</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">oSubfolder</span><span class="p">.</span><span class="n">Name</span>
-            <span class="err">&#39;递归遍历文件夹</span>
-        <span class="n">Next</span>
-        <span class="n">For</span> <span class="n">each</span> <span class="n">oFile</span> <span class="n">in</span> <span class="n">ofolder</span><span class="p">.</span><span class="n">Files</span>
-            <span class="n">ocab</span><span class="p">.</span><span class="n">AddFile</span> <span class="n">s1</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">oFile</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span><span class="n">s2</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">oFile</span><span class="p">.</span><span class="n">Name</span>
-        <span class="n">Next</span>
-    <span class="n">End</span> <span class="k">if</span>
-<span class="n">End</span> <span class="n">SUB</span>
+SUB packit(s1,s2)
+    On Error Resume next
+    if Right(s1,1) &amp;lt;&amp;gt; &quot;\&quot; s1=s1 &amp;amp; &quot;\&quot;
+    if Right(s2,1) &amp;lt;&amp;gt; &quot;&quot; s2=s2 &amp;amp; &quot;\&quot;
+    &#39;注释:S1文件路径,S2在CAB包内的路径
+    set ofso=createobject(&quot;Scripting.FileSystemObject&quot;)
+    if ofso.FolderExists(s1) then
+        set ofolder=ofso.GetFolder(s1)
+        For each oSubfolder in ofolder.Subfolders
+            packit s1 &amp;amp; oSubfolder.Name,s2 &amp;amp; oSubfolder.Name
+            &#39;递归遍历文件夹
+        Next
+        For each oFile in ofolder.Files
+            ocab.AddFile s1 &amp;amp; oFile.Name,s2 &amp;amp; oFile.Name
+        Next
+    End if
+End SUB
 
-<span class="err">需要解压时，</span><span class="n">RAR</span><span class="err">就能打开。没有</span><span class="n">RAR</span><span class="err">，可以使用：`</span><span class="n">Expand</span> <span class="s">&quot;filepath&quot;</span> <span class="n">F</span><span class="o">:*</span><span class="p">.</span><span class="o">*</span> <span class="n">outpath</span><span class="err">`</span>
+需要解压时，RAR就能打开。没有RAR，可以使用：`Expand &quot;filepath&quot; F:*.* outpath`
 </pre></div>
 
 
@@ -120,25 +120,25 @@
 <li>
 <p>SAFRCFileDlg.FileOpen 和 UserAccounts.CommonDialog</p>
 <p>这个用来创建打开文件对话框。类似的还有UserAccounts.CommonDialog，这个功能更强大。</p>
-<div class="highlight"><pre><span class="o">*</span> <span class="n">SAFRCFileDlg</span><span class="p">.</span><span class="n">FileSave</span><span class="err">对象：属性有：</span>
+<div class="highlight"><pre>* SAFRCFileDlg.FileSave对象：属性有：
 
-    <span class="n">FileName</span> <span class="err">—</span> <span class="err">指定默认文件名；</span>
-    <span class="n">FileType</span> <span class="err">—</span> <span class="err">指定文件扩展名；</span>
-    <span class="n">OpenFileSaveDlg</span> <span class="err">—</span> <span class="err">显示文件保存框体方法。</span>
+    FileName — 指定默认文件名；
+    FileType — 指定文件扩展名；
+    OpenFileSaveDlg — 显示文件保存框体方法。
 
-<span class="o">*</span> <span class="n">SAFRCFileDlg</span><span class="p">.</span><span class="n">FileOpen</span> <span class="err">对象：</span>
+* SAFRCFileDlg.FileOpen 对象：
 
-    <span class="n">FileName</span> <span class="err">—</span> <span class="err">默认文件名属性；</span>
-    <span class="n">OpenFileOpenDlg</span> <span class="err">—</span> <span class="err">显示打开文件框体方法。</span>
+    FileName — 默认文件名属性；
+    OpenFileOpenDlg — 显示打开文件框体方法。
 
-<span class="o">*</span> <span class="n">UserAccounts</span><span class="p">.</span><span class="n">CommonDialog</span><span class="err">对象：</span>
+* UserAccounts.CommonDialog对象：
 
-    <span class="n">Filter</span> <span class="err">—</span> <span class="err">扩展名属性（</span><span class="s">&quot;vbs File|*.vbs|All Files|*.*&quot;</span><span class="err">）；</span><span class="o">&lt;</span>
-    <span class="n">FilterIndex</span> <span class="err">—</span> <span class="err">指定</span>
-    <span class="n">InitialDir</span> <span class="err">—</span> <span class="err">指定默认的文件夹</span>
-    <span class="n">FileName</span> <span class="err">—</span> <span class="err">指定的文件名</span>
-    <span class="n">Flags</span> <span class="err">—</span> <span class="err">对话框的类型</span>
-    <span class="n">Showopen</span> <span class="err">—</span> <span class="err">显示：</span>
+    Filter — 扩展名属性（&quot;vbs File|*.vbs|All Files|*.*&quot;）；&lt;
+    FilterIndex — 指定
+    InitialDir — 指定默认的文件夹
+    FileName — 指定的文件名
+    Flags — 对话框的类型
+    Showopen — 显示：
 </pre></div>
 
 
@@ -146,9 +146,9 @@
 <li>
 <p>SAPI.SpVoice</p>
 <p>这个有点意思，可以语音读文字。一个例子：</p>
-<div class="highlight"><pre><span class="n">SzBuf</span> <span class="o">=</span> <span class="n">InputBox</span><span class="p">(</span> <span class="s">&quot;输入英文&quot;</span><span class="p">,</span> <span class="s">&quot;输入&quot;</span><span class="p">,</span> <span class="s">&quot;I LOVE YOU&quot;</span> <span class="p">)</span>
-<span class="n">set</span> <span class="n">tack</span><span class="o">=</span><span class="n">CreateObject</span><span class="p">(</span><span class="s">&quot;SAPI.SpVoice&quot;</span><span class="p">)</span>
-<span class="n">tack</span><span class="p">.</span><span class="n">Speak</span><span class="p">(</span><span class="n">SzBuf</span><span class="p">)</span>
+<div class="highlight"><pre>SzBuf = InputBox( &quot;输入英文&quot;, &quot;输入&quot;, &quot;I LOVE YOU&quot; )
+set tack=CreateObject(&quot;SAPI.SpVoice&quot;)
+tack.Speak(SzBuf)
 </pre></div>
 
 
@@ -156,24 +156,24 @@
 <li>
 <p>agent.control</p>
 <p>这个也有点意思，用来产生一个officeXP那样的小助手。一个例子：</p>
-<div class="highlight"><pre><span class="n">AgentControl</span><span class="o">=</span><span class="n">createobject</span><span class="p">(</span><span class="s">&quot;agent.control&quot;</span><span class="p">)</span>
-<span class="n">AgentControl</span><span class="p">.</span><span class="n">Connected</span> <span class="o">=</span> <span class="n">True</span>
-<span class="n">AgentControl</span><span class="p">.</span><span class="n">Characters</span><span class="p">.</span><span class="n">Load</span> <span class="s">&quot;Merlin&quot;</span><span class="p">,</span> <span class="s">&quot;Merlin.acs&quot;</span>
-<span class="n">Set</span> <span class="n">Merlin</span> <span class="o">=</span> <span class="n">AgentControl</span><span class="p">.</span><span class="n">Characters</span><span class="p">(</span><span class="s">&quot;Merlin&quot;</span><span class="p">)</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Get</span> <span class="s">&quot;State&quot;</span><span class="p">,</span> <span class="s">&quot;Showing, Speaking&quot;</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Get</span> <span class="s">&quot;Animation&quot;</span><span class="p">,</span> <span class="s">&quot;Greet, GreetReturn&quot;</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Show</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Get</span> <span class="s">&quot;State&quot;</span><span class="p">,</span> <span class="s">&quot;Hiding&quot;</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Play</span> <span class="s">&quot;Greet&quot;</span>  <span class="err">&#39;这个让他鞠躬</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Speak</span> <span class="s">&quot;hello&quot;</span>  <span class="err">&#39;这个让他说话</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Play</span> <span class="s">&quot;Greet&quot;</span>
-<span class="n">wscript</span><span class="p">.</span><span class="n">sleep</span> <span class="mi">5000</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Speak</span> <span class="s">&quot;welcome &quot;</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Play</span> <span class="s">&quot;Greet&quot;</span>
-<span class="n">wscript</span><span class="p">.</span><span class="n">sleep</span> <span class="mi">5000</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Speak</span> <span class="s">&quot;goodbay&quot;</span>
-<span class="n">wscript</span><span class="p">.</span><span class="n">sleep</span> <span class="mi">5000</span>
-<span class="n">Merlin</span><span class="p">.</span><span class="n">Hide</span>
+<div class="highlight"><pre>AgentControl=createobject(&quot;agent.control&quot;)
+AgentControl.Connected = True
+AgentControl.Characters.Load &quot;Merlin&quot;, &quot;Merlin.acs&quot;
+Set Merlin = AgentControl.Characters(&quot;Merlin&quot;)
+Merlin.Get &quot;State&quot;, &quot;Showing, Speaking&quot;
+Merlin.Get &quot;Animation&quot;, &quot;Greet, GreetReturn&quot;
+Merlin.Show
+Merlin.Get &quot;State&quot;, &quot;Hiding&quot;
+Merlin.Play &quot;Greet&quot;  &#39;这个让他鞠躬
+Merlin.Speak &quot;hello&quot;  &#39;这个让他说话
+Merlin.Play &quot;Greet&quot;
+wscript.sleep 5000
+Merlin.Speak &quot;welcome &quot;
+Merlin.Play &quot;Greet&quot;
+wscript.sleep 5000
+Merlin.Speak &quot;goodbay&quot;
+wscript.sleep 5000
+Merlin.Hide
 </pre></div>
 
 
@@ -182,17 +182,16 @@
     </div>
     <div class="post-footer">
         <span class="meta-prep">Post in</span>
-        <abbr class="date" title="2009-10-08T09:32:35"> 
+        <abbr class="date" title="2009-10-08T09:32:35+08:00"> 
             <a href="../archive/2009/Oct/index.html">
                 Oct 08 2009 </a>
         </abbr>
         <br />
         Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
         <span class="meta-prep"> with tags</span>
-                            <a href="../tag/hack.html">Hack</a>
-                            <a href="../tag/imported-blog.html">imported blog</a>
-                            <a href="../tag/.html"></a>
-                </div>
+                <a href="../tag/hack.html">Hack</a>
+                <a href="../tag/imported-blog.html">imported blog</a>
+    </div>
     <div class="clear"></div>
 </artical>
 <section>

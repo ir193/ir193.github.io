@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="http://ir193.github.io/" rel="alternate"></link><link href="http://ir193.github.io/feeds%5Call-zh-cn.atom.xml" rel="self"></link><id>http://ir193.github.io/</id><updated>2013-10-09T01:06:33+08:00</updated><entry><title>cve-2013-2094</title><link href="http://ir193.github.io/post/cve-2013-2094.html" rel="alternate"></link><updated>2013-10-09T01:06:33+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-09:post/cve-2013-2094.html</id><summary type="html">&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="http://ir193.github.io/" rel="alternate"></link><link href="http://ir193.github.io/feeds/all-zh-cn.atom.xml" rel="self"></link><id>http://ir193.github.io/</id><updated>2013-10-09T01:06:33+08:00</updated><entry><title>cve-2013-2094</title><link href="http://ir193.github.io/post/cve-2013-2094.html" rel="alternate"></link><updated>2013-10-09T01:06:33+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-09:post/cve-2013-2094.html</id><summary type="html">&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了PERF_EVENT的linux系统。利用该漏洞，通过perf_event_open系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
 &lt;p&gt;发生漏洞的是linux kernel中的perf event子系统，perf event是linux系统中提供性能分析接口的子系统，于2.6.31之后引入linux，之前被称为 Performance Counters for Linux (PCL)。通过syscall函数，用户可以调用perf event子系统提供的功能。由于perf event中的漏洞，用户可以通过精心构造的调用在任何内存地址写入数据，从而获得系统的最高权限。&lt;/p&gt;
 &lt;p&gt;引起cve-2013-2094漏洞的是位于&lt;a href="http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/kernel/events/core.c?id=8176cced706b5e5d15887584150764894e94e02f"&gt;kernel/events/core.c&lt;/a&gt;文件中的perf_swevent_init函数。当使用syscall打开perf_event的file descriptor时，该函数被调用。&lt;/p&gt;
 &lt;p&gt;在受影响的版本中，core.c关键部分内容如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;perf_swevent_init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;perf_event&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;event_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  &lt;span class="c1"&gt;//dangerous!&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;static int perf_swevent_init(struct perf_event *event)
+{
+    int event_id = event-&amp;gt;attr.config;  //dangerous!
 
-    &lt;span class="cm"&gt;/*&lt;/span&gt;
-&lt;span class="cm"&gt;     * ....omit some code...&lt;/span&gt;
-&lt;span class="cm"&gt;     */&lt;/span&gt;
+    /*
+     * ....omit some code...
+     */
 
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="n"&gt;PERF_COUNT_SW_MAX&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ENOENT&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    if (event_id &amp;gt;= PERF_COUNT_SW_MAX)
+        return -ENOENT;
 
-    &lt;span class="cm"&gt;/*&lt;/span&gt;
-&lt;span class="cm"&gt;     * .........omit........&lt;/span&gt;
-&lt;span class="cm"&gt;     */&lt;/span&gt;
+    /*
+     * .........omit........
+     */
 
-&lt;span class="p"&gt;}&lt;/span&gt;
+}
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;由于将event_id定义为了有符号型整数，而后面又只检查了event_id的上界，所以当值为负时，即可越过检查，继续执行后面的代码&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;if (!event-&amp;gt;parent) {
+    int err;
 
-    &lt;span class="n"&gt;err&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;swevent_hlist_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    err = swevent_hlist_get(event);
+    if (err)
+        return err;
 
-    &lt;span class="n"&gt;atomic_inc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;perf_swevent_enabled&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
-    &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;destroy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sw_perf_event_destroy&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;
+    atomic_inc(&amp;amp;perf_swevent_enabled[event_id]);
+    event-&amp;gt;destroy = sw_perf_event_destroy;
+}
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;其中，static_key_slow_inc函数将某地址内容做inc。&lt;/p&gt;
 &lt;p&gt;当使用负数值的event_id调用时，perf_swevent_enabled[event_id]将指向内核空间，如，在Cent OS 64bit系统中，当event_id = -1调用时，perf_swevent_enabled[event_id]的地址为:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mh"&gt;0xfffffffffffffffe&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mh"&gt;0xffffffff81f360c0&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mh"&gt;0xFFFFFFFF81F360B8&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;0xfffffffffffffffe * 4 + 0xffffffff81f360c0 == 0xFFFFFFFF81F360B8
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -81,34 +81,34 @@
 &lt;p&gt;在ARM linux下，该漏洞仍然存在，仍然可以通过负数的event_id将任意内存地址+1。&lt;/p&gt;
 &lt;p&gt;但由于手机使用的ARM架构和x64架构下，linux内核代码有所不同，该漏洞的利用方式也有所不同。&lt;/p&gt;
 &lt;p&gt;但是在ARM linux下，IDT的结构如下&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;_idt_entry&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;short&lt;/span&gt; &lt;span class="n"&gt;base_lo&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;short&lt;/span&gt; &lt;span class="n"&gt;sel&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;unused&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-  &lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;short&lt;/span&gt; &lt;span class="n"&gt;base_hi&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="n"&gt;__attribute__&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;packed&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct _idt_entry {
+  unsigned short base_lo;
+  unsigned short sel;
+  unsigned char unused;
+  unsigned char flags;
+  unsigned short base_hi;
+} __attribute__((packed));
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;注意到base_hi是short型，而perf_swevent_enabled是int型的数组，所以无法将地址修改base_hi到用户空间地址。&lt;/p&gt;
 &lt;p&gt;所以在ARM下我们没有修改IDT，而是在linux内核中寻找合适的函数指针。反复调用perf_event_open，将函数指针的值加到用户能控制的地址，然后调用函数。ptmx_fops结构中的fsync函数指针被初始化为0，且不需要特殊的权限即可调用。&lt;/p&gt;
 &lt;p&gt;利用的基本思路是：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cm"&gt;/* file_operations 结构fsync函数的偏移为56 */&lt;/span&gt;
-&lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pmtx_ops&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mh"&gt;56&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;payload&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;perf_table&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mh"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cm"&gt;/* file_operations 结构fsync函数的偏移为56 */&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+int&lt;span class="w"&gt; &lt;/span&gt;target&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pmtx_ops&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;56&lt;/span&gt;&lt;span class="err"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+int&lt;span class="w"&gt; &lt;/span&gt;payload&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-((&lt;/span&gt;perf_table&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;target&lt;span class="o"&gt;)/&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
-&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;perf_event_attr&lt;/span&gt; &lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;config&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;payload&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;...&lt;/span&gt;
+struct&lt;span class="w"&gt; &lt;/span&gt;perf_event_attr&lt;span class="w"&gt; &lt;/span&gt;event_attr&lt;span class="err"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+event_attr&lt;span class="o"&gt;.&lt;/span&gt;config&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;payload&lt;span class="err"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
-&lt;span class="cm"&gt;/* 反复调用将fsync的值修改为合适的值 */&lt;/span&gt;
-&lt;span class="n"&gt;syscall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__NR_perf_event_open&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mh"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mh"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mh"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mh"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="cm"&gt;/* 反复调用将fsync的值修改为合适的值 */&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+syscall&lt;span class="o"&gt;(&lt;/span&gt;__NR_perf_event_open&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;event_attr&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="err"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
-&lt;span class="cm"&gt;/* 调用 */&lt;/span&gt;
-&lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;ptmx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/dev/ptmx&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;O_RDWR&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="n"&gt;fsync&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ptmx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="cm"&gt;/* 调用 */&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+int&lt;span class="w"&gt; &lt;/span&gt;ptmx&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;open&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/dev/ptmx&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;O_RDWR&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="err"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+fsync&lt;span class="o"&gt;(&lt;/span&gt;ptmx&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="err"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -118,18 +118,18 @@
 &lt;p&gt;|| Nexus 4 官方Rom 4.2.1|| 成功 ||
 || Nexus 4 Cyanogenmod 10.1.2|| 内核已修补 ||
 || Lenove 860i 官方ROM || 内核不支持perf_event ||
-|| Huawei U9508 官方ROM || 内核不支持perf_event ||&lt;/p&gt;</summary><category term="Hack"></category><category term="linux"></category><category term=""></category></entry><entry><title>快毕业了</title><link href="http://ir193.github.io/post/graduation-is-near.html" rel="alternate"></link><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
+|| Huawei U9508 官方ROM || 内核不支持perf_event ||&lt;/p&gt;</summary><category term="Hack"></category><category term="linux"></category></entry><entry><title>快毕业了</title><link href="http://ir193.github.io/post/graduation-is-near.html" rel="alternate"></link><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:post/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
 &lt;h2&gt;毕业旅行&lt;/h2&gt;
 &lt;p&gt;最近最重要的事就是跟同学去了毕业旅行。因为各种事情都赶到这个时间了，所以最后过程不可谓不艰辛。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="/static/pictures/graduation/map.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="/pictures/graduation/map.png" /&gt;&lt;/p&gt;
 &lt;p&gt;先是27号晚上课题组吃饭，又吃了不少生鱼片……然后28号去邯郸看女朋友，在邯郸玩2天，然后30号早晨一早回北京，中午11到回了一下宿舍，下午1点又坐城际回家同学聚会，下了火车直接拉着箱子去吃饭。1号中午回北京，没回学校直接和志颖邈邈在北京北站一起上火车去赤峰。几天的折腾下来确实相当的累，不过幸运的是补到了卧铺票，晚上睡了几个小时。&lt;/p&gt;
 &lt;p&gt;在去往赤峰的火车上遇到了一个叔叔，带了一个似乎不会说中文的年轻的女人。晚上下车时候听到了女人拼写了“V-i-e-t-n-a-m”。莫非是遇到了传说中的……&lt;/p&gt;
 &lt;p&gt;到了赤峰市的天义，打车去找大部队。赤峰前一天刚刚下过雨，所以路极其难走，出租车走到一半就把我们放下了，换成了一个面包车。不过最后还是顺利的找到了大部队。&lt;/p&gt;
 &lt;p&gt;找到后本想去漂流，但因为水流太急，只能回来。路过了一个水库，景色相当不错，照了几张照片，下来划了划船，拍了很不错的几张照片。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="/static/pictures/graduation/lake.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="/pictures/graduation/lake.jpg" /&gt;&lt;/p&gt;
 &lt;p&gt;下午一直在坐车，长达5个小时，比较无聊，期间体验了草原的大雨。晚上在赤峰市吃了蒙餐，很是丰盛。&lt;/p&gt;
 &lt;p&gt;第二天去了草原，又是长达几个小时的车。不过草原的景色相当的漂亮，所谓的石林也确实有些怪石值得一看。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="/static/pictures/graduation/grassland.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="/pictures/graduation/grassland.jpg" /&gt;&lt;/p&gt;
 &lt;p&gt;第三天回京。回程的火车是硬座，不过打牌、玩三国杀过的很快。晚上11点到北京，打车回宿舍时还发生了写小插曲，因为最后剩下了5个人一起走，所以只能打黑车，黑车要价很高，本来说好到五道口50，听说到清华之后忽然加到了70。我想起了一个划价的方法，让他先到五道口，快到了之后让他开，按每公里5块，给10块，开到2km我们就下车。于是他最后就妥协到东北门60，呵呵。&lt;/p&gt;
 &lt;h2&gt;诸葛老师的实习生&lt;/h2&gt;
 &lt;p&gt;回京之后就是各种没心没肺的玩，结果差点误了事。&lt;/p&gt;
@@ -175,7 +175,7 @@
 &lt;/ol&gt;</summary><category term="non-tech"></category><category term="weekly"></category></entry><entry><title>Hello World</title><link href="http://ir193.github.io/post/hello-world.html" rel="alternate"></link><updated>2010-12-03T10:20:00+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2010-12-03:post/hello-world.html</id><summary type="html">&lt;h2&gt;Hello World&lt;/h2&gt;
 &lt;p&gt;This is the first post on github.&lt;/p&gt;
 &lt;p&gt;The blog is base on &lt;a href="http://www.getpelican.com/"&gt;pelican&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;The theme is based on &lt;a href="http://wordpress.org/themes/responsive"&gt;responsive&lt;/a&gt; theme of wordpress&lt;/p&gt;</summary><category term=""></category></entry><entry><title>几个雷客图ASP站长安全助手的小问题</title><link href="http://ir193.github.io/post/lake2_bug.html" rel="alternate"></link><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:post/lake2_bug.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的开放实验室写的。&lt;/p&gt;
+&lt;p&gt;The theme is based on &lt;a href="http://wordpress.org/themes/responsive"&gt;responsive&lt;/a&gt; theme of wordpress&lt;/p&gt;</summary></entry><entry><title>几个雷客图ASP站长安全助手的小问题</title><link href="http://ir193.github.io/post/lake2_bug.html" rel="alternate"></link><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:post/lake2_bug.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的开放实验室写的。&lt;/p&gt;
 &lt;p&gt;从电脑里翻出来这个真是百感交集啊，现在来看这篇文章，这些小trick确实后来也没有听说过。当然这与asp的没落、我不再关注web安全有着不小关系。&lt;/p&gt;
 &lt;p&gt;大学四年，安全方面的技术确实没有积累，是根本没有看。而现在在诸葛老师的实验室，似乎绕了一个圈子又回到了开始。而一圈走下来却发现自己没有留下什么。确实有些伤感。&lt;/p&gt;
 &lt;h4&gt;以下是导入的正文&lt;/h4&gt;
@@ -197,10 +197,10 @@
 &lt;/ul&gt;
 &lt;p&gt;时即判断为有问题。&lt;/p&gt;
 &lt;p&gt;但由于vbs的正则表达式默认采用贪婪模式，即匹配最长的满足条件的字符串。这样，假如在CreateObject一行的末尾，又出现一个括号的话，正则表达式将匹配到最后一个括号。为了不产生语法错误，可以把括号放在注释中。像这样：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;lt;!--&lt;/span&gt; &lt;span class="n"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;vbs&lt;/span&gt; &lt;span class="o"&gt;--&amp;gt;&lt;/span&gt;
-&lt;span class="n"&gt;Function&lt;/span&gt; &lt;span class="n"&gt;CreateObj&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;Set&lt;/span&gt; &lt;span class="n"&gt;CreateObj&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateObject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;      &lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;End&lt;/span&gt; &lt;span class="n"&gt;Function&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;!-- lang:vbs --&amp;gt;
+Function CreateObj(str)
+    Set CreateObj = server.CreateObject(str)      &amp;#39;&amp;quot;&amp;quot;&amp;quot;&amp;quot;)
+End Function
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -212,8 +212,8 @@
 &lt;p&gt;除了一些比较危险的组件，雷客图还检查了一些组件的方法。由于组件的方法不能像字符串变量一样拼接，绕过的方法受到限制。&lt;/p&gt;
 &lt;p&gt;但雷客图的特征码中，为了保证查杀的准确性，都只查杀以&lt;code&gt;.&lt;/code&gt;开头的关键字。如&lt;code&gt;.ExecuteStatement&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;问题是我们可以在方法前加一个空格，还是可以运行的&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;lt;!--&lt;/span&gt; &lt;span class="n"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;vbs&lt;/span&gt; &lt;span class="o"&gt;--&amp;gt;&lt;/span&gt;
-&lt;span class="n"&gt;wshl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="n"&gt;exec&lt;/span&gt; &lt;span class="n"&gt;strCmd&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;!-- lang:vbs --&amp;gt;
+wshl. exec strCmd
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -228,9 +228,9 @@
 &lt;/ol&gt;
 &lt;p&gt;雷客图的很多特征码是针对VBS的，但ASP也可以用Jscript写。Jscript由于可以自由的换行、插入空格，比VBS更灵活。&lt;/p&gt;
 &lt;p&gt;比如调用Wscript.shell的exec可以有两种形式：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;lt;!--&lt;/span&gt; &lt;span class="n"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;vbs&lt;/span&gt; &lt;span class="o"&gt;--&amp;gt;&lt;/span&gt;
-&lt;span class="n"&gt;owshl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;
-&lt;span class="n"&gt;owshl&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;exec&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;!-- lang:vbs --&amp;gt;
+owshl.exec
+owshl[&amp;quot;exec&amp;quot;]
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -248,7 +248,7 @@
 
 
 &lt;p&gt;雷客图总的来说是一个相当优秀的ASP木马查杀工具，其中有很多东西值得学习。我小菜不敢挑战lake2大侠，无非是在被忽视的地方小打小闹一下。最后，希望lake2多开发一些工具，多公布几个漏洞。&lt;/p&gt;
-&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</summary><category term="Hack"></category><category term="imported blog"></category><category term=""></category></entry><entry><title>记下几个奇怪的Com组件</title><link href="http://ir193.github.io/post/some_interesting_com.html" rel="alternate"></link><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:post/some_interesting_com.html</id><summary type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</summary><category term="Hack"></category><category term="imported blog"></category></entry><entry><title>记下几个奇怪的Com组件</title><link href="http://ir193.github.io/post/some_interesting_com.html" rel="alternate"></link><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:post/some_interesting_com.html</id><summary type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
 &lt;hr /&gt;
 &lt;p&gt;这篇Blog应该也是09年暑假前后写下的，存在了U盘里然后一直没有发布。&lt;/p&gt;
 &lt;p&gt;当时写这篇文章的原因是在写一个asp的webshell，asp的全部功能几乎都要靠ActiveX完成，所以当时几乎把系统注册表里CLASSID下的全部键值都试过了一遍，只是想找找有没有不常见的，提供合适功能的组件。最后当然是没有啦。&lt;/p&gt;
@@ -260,12 +260,12 @@
 &lt;li&gt;
 &lt;p&gt;compatUI.Util&lt;/p&gt;
 &lt;p&gt;除了Wscript.Shell和shell.application以外，这个组件也能运行程序，但是不知道这个组件是不是系统自带的。原型是：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;Function&lt;/span&gt;  &lt;span class="n"&gt;RunApplication&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pLayers&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;BSTR&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;pszCmdLine&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;BSTR&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;bEnableLog&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;I4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;Function&lt;/span&gt;&lt;span class="err"&gt; &lt;/span&gt; &lt;span class="nt"&gt;RunApplication&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;pLayers&lt;/span&gt;&lt;span class="nd"&gt;:BSTR&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;pszCmdLine&lt;/span&gt;&lt;span class="nd"&gt;:BSTR&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;bEnableLog&lt;/span&gt;&lt;span class="nd"&gt;:I4&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;使用方法：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ocu&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Runapplication&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;c:\windows\system32\cmd.exe&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;FALSE&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ocu.Runapplication &amp;quot;&amp;quot;,&amp;quot;c:\windows\system32\cmd.exe&amp;quot;,FALSE
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -276,37 +276,37 @@
 &lt;p&gt;MakeCAB.MakeCAB&lt;/p&gt;
 &lt;p&gt;这个组件用来打CAB包，不过好像没什么用，因为XP才带这个组件，但XP自带Zip打包功能，没人会用这个吧。想想唯一有用的是向没有压缩软件的2k系统复制东西，因为2k带expand命令，可以解压。&lt;/p&gt;
 &lt;p&gt;以下是简单的Vbs脚本，可以将文件夹打包成CAB包&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;sPath&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;请输入要打包的文件夹路径&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;sCab&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;请输入要CAB文件夹保存路径&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;ocab&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;createobject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;MakeCAB.MakeCAB&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;ocab&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateCab&lt;/span&gt; &lt;span class="n"&gt;sCAB&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;True&lt;/span&gt;
-&lt;span class="n"&gt;packit&lt;/span&gt; &lt;span class="n"&gt;sPath&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;ocab&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CloseCAB&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;NOT&lt;/span&gt; &lt;span class="n"&gt;Err&lt;/span&gt; &lt;span class="n"&gt;Then&lt;/span&gt;
-    &lt;span class="n"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;打包成功&amp;quot;&lt;/span&gt;
-&lt;span class="k"&gt;else&lt;/span&gt;
-    &lt;span class="n"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;有文件没能打入压缩包&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;End&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sPath = input(&amp;quot;请输入要打包的文件夹路径&amp;quot;)
+sCab = input(&amp;quot;请输入要CAB文件夹保存路径&amp;quot;)
+set ocab=createobject(&amp;quot;MakeCAB.MakeCAB&amp;quot;)
+ocab.CreateCab sCAB,True,0,True
+packit sPath,&amp;quot;&amp;quot;
+ocab.CloseCAB
+if NOT Err Then
+    wscript.echo &amp;quot;打包成功&amp;quot;
+else
+    wscript.echo &amp;quot;有文件没能打入压缩包&amp;quot;
+End if
 
-&lt;span class="n"&gt;SUB&lt;/span&gt; &lt;span class="n"&gt;packit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;s2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;On&lt;/span&gt; &lt;span class="n"&gt;Error&lt;/span&gt; &lt;span class="n"&gt;Resume&lt;/span&gt; &lt;span class="n"&gt;next&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;Right&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;lt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;gt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; s1=s1 &amp;amp;amp; &amp;quot;&lt;/span&gt;&lt;span class="err"&gt;\&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;Right&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;lt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;gt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class="n"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;s2&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;amp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;
-    &lt;span class="err"&gt;&amp;#39;注释&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;S1&lt;/span&gt;&lt;span class="err"&gt;文件路径&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;S2&lt;/span&gt;&lt;span class="err"&gt;在&lt;/span&gt;&lt;span class="n"&gt;CAB&lt;/span&gt;&lt;span class="err"&gt;包内的路径&lt;/span&gt;
-    &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;ofso&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;createobject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Scripting.FileSystemObject&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;ofso&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FolderExists&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;ofolder&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ofso&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GetFolder&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;For&lt;/span&gt; &lt;span class="n"&gt;each&lt;/span&gt; &lt;span class="n"&gt;oSubfolder&lt;/span&gt; &lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ofolder&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Subfolders&lt;/span&gt;
-            &lt;span class="n"&gt;packit&lt;/span&gt; &lt;span class="n"&gt;s1&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;amp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;oSubfolder&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;s2&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;amp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;oSubfolder&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;
-            &lt;span class="err"&gt;&amp;#39;递归遍历文件夹&lt;/span&gt;
-        &lt;span class="n"&gt;Next&lt;/span&gt;
-        &lt;span class="n"&gt;For&lt;/span&gt; &lt;span class="n"&gt;each&lt;/span&gt; &lt;span class="n"&gt;oFile&lt;/span&gt; &lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ofolder&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Files&lt;/span&gt;
-            &lt;span class="n"&gt;ocab&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AddFile&lt;/span&gt; &lt;span class="n"&gt;s1&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;amp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;oFile&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;s2&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;amp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;oFile&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Name&lt;/span&gt;
-        &lt;span class="n"&gt;Next&lt;/span&gt;
-    &lt;span class="n"&gt;End&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt;
-&lt;span class="n"&gt;End&lt;/span&gt; &lt;span class="n"&gt;SUB&lt;/span&gt;
+SUB packit(s1,s2)
+    On Error Resume next
+    if Right(s1,1) &amp;amp;lt;&amp;amp;gt; &amp;quot;\&amp;quot; s1=s1 &amp;amp;amp; &amp;quot;\&amp;quot;
+    if Right(s2,1) &amp;amp;lt;&amp;amp;gt; &amp;quot;&amp;quot; s2=s2 &amp;amp;amp; &amp;quot;\&amp;quot;
+    &amp;#39;注释:S1文件路径,S2在CAB包内的路径
+    set ofso=createobject(&amp;quot;Scripting.FileSystemObject&amp;quot;)
+    if ofso.FolderExists(s1) then
+        set ofolder=ofso.GetFolder(s1)
+        For each oSubfolder in ofolder.Subfolders
+            packit s1 &amp;amp;amp; oSubfolder.Name,s2 &amp;amp;amp; oSubfolder.Name
+            &amp;#39;递归遍历文件夹
+        Next
+        For each oFile in ofolder.Files
+            ocab.AddFile s1 &amp;amp;amp; oFile.Name,s2 &amp;amp;amp; oFile.Name
+        Next
+    End if
+End SUB
 
-&lt;span class="err"&gt;需要解压时，&lt;/span&gt;&lt;span class="n"&gt;RAR&lt;/span&gt;&lt;span class="err"&gt;就能打开。没有&lt;/span&gt;&lt;span class="n"&gt;RAR&lt;/span&gt;&lt;span class="err"&gt;，可以使用：`&lt;/span&gt;&lt;span class="n"&gt;Expand&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;filepath&amp;quot;&lt;/span&gt; &lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="o"&gt;:*&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;outpath&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;
+需要解压时，RAR就能打开。没有RAR，可以使用：`Expand &amp;quot;filepath&amp;quot; F:*.* outpath`
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -318,25 +318,25 @@
 &lt;li&gt;
 &lt;p&gt;SAFRCFileDlg.FileOpen 和 UserAccounts.CommonDialog&lt;/p&gt;
 &lt;p&gt;这个用来创建打开文件对话框。类似的还有UserAccounts.CommonDialog，这个功能更强大。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;SAFRCFileDlg&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FileSave&lt;/span&gt;&lt;span class="err"&gt;对象：属性有：&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;* SAFRCFileDlg.FileSave对象：属性有：
 
-    &lt;span class="n"&gt;FileName&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;指定默认文件名；&lt;/span&gt;
-    &lt;span class="n"&gt;FileType&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;指定文件扩展名；&lt;/span&gt;
-    &lt;span class="n"&gt;OpenFileSaveDlg&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;显示文件保存框体方法。&lt;/span&gt;
+    FileName — 指定默认文件名；
+    FileType — 指定文件扩展名；
+    OpenFileSaveDlg — 显示文件保存框体方法。
 
-&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;SAFRCFileDlg&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FileOpen&lt;/span&gt; &lt;span class="err"&gt;对象：&lt;/span&gt;
+* SAFRCFileDlg.FileOpen 对象：
 
-    &lt;span class="n"&gt;FileName&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;默认文件名属性；&lt;/span&gt;
-    &lt;span class="n"&gt;OpenFileOpenDlg&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;显示打开文件框体方法。&lt;/span&gt;
+    FileName — 默认文件名属性；
+    OpenFileOpenDlg — 显示打开文件框体方法。
 
-&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;UserAccounts&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CommonDialog&lt;/span&gt;&lt;span class="err"&gt;对象：&lt;/span&gt;
+* UserAccounts.CommonDialog对象：
 
-    &lt;span class="n"&gt;Filter&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;扩展名属性（&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;vbs File|*.vbs|All Files|*.*&amp;quot;&lt;/span&gt;&lt;span class="err"&gt;）；&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;
-    &lt;span class="n"&gt;FilterIndex&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;指定&lt;/span&gt;
-    &lt;span class="n"&gt;InitialDir&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;指定默认的文件夹&lt;/span&gt;
-    &lt;span class="n"&gt;FileName&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;指定的文件名&lt;/span&gt;
-    &lt;span class="n"&gt;Flags&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;对话框的类型&lt;/span&gt;
-    &lt;span class="n"&gt;Showopen&lt;/span&gt; &lt;span class="err"&gt;—&lt;/span&gt; &lt;span class="err"&gt;显示：&lt;/span&gt;
+    Filter — 扩展名属性（&amp;quot;vbs File|*.vbs|All Files|*.*&amp;quot;）；&amp;lt;
+    FilterIndex — 指定
+    InitialDir — 指定默认的文件夹
+    FileName — 指定的文件名
+    Flags — 对话框的类型
+    Showopen — 显示：
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -344,9 +344,9 @@
 &lt;li&gt;
 &lt;p&gt;SAPI.SpVoice&lt;/p&gt;
 &lt;p&gt;这个有点意思，可以语音读文字。一个例子：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;SzBuf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;InputBox&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;输入英文&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;输入&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I LOVE YOU&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;tack&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;CreateObject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;SAPI.SpVoice&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;tack&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Speak&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SzBuf&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;SzBuf = InputBox( &amp;quot;输入英文&amp;quot;, &amp;quot;输入&amp;quot;, &amp;quot;I LOVE YOU&amp;quot; )
+set tack=CreateObject(&amp;quot;SAPI.SpVoice&amp;quot;)
+tack.Speak(SzBuf)
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -354,26 +354,26 @@
 &lt;li&gt;
 &lt;p&gt;agent.control&lt;/p&gt;
 &lt;p&gt;这个也有点意思，用来产生一个officeXP那样的小助手。一个例子：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;AgentControl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;createobject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;agent.control&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;AgentControl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Connected&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;True&lt;/span&gt;
-&lt;span class="n"&gt;AgentControl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Characters&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Load&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Merlin&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Merlin.acs&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;Set&lt;/span&gt; &lt;span class="n"&gt;Merlin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;AgentControl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Characters&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Merlin&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Get&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;State&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Showing, Speaking&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Get&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Animation&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Greet, GreetReturn&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Show&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Get&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;State&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Hiding&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Play&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Greet&amp;quot;&lt;/span&gt;  &lt;span class="err"&gt;&amp;#39;这个让他鞠躬&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Speak&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;  &lt;span class="err"&gt;&amp;#39;这个让他说话&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Play&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Greet&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Speak&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;welcome &amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Play&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Greet&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Speak&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;goodbay&amp;quot;&lt;/span&gt;
-&lt;span class="n"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
-&lt;span class="n"&gt;Merlin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Hide&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;AgentControl=createobject(&amp;quot;agent.control&amp;quot;)
+AgentControl.Connected = True
+AgentControl.Characters.Load &amp;quot;Merlin&amp;quot;, &amp;quot;Merlin.acs&amp;quot;
+Set Merlin = AgentControl.Characters(&amp;quot;Merlin&amp;quot;)
+Merlin.Get &amp;quot;State&amp;quot;, &amp;quot;Showing, Speaking&amp;quot;
+Merlin.Get &amp;quot;Animation&amp;quot;, &amp;quot;Greet, GreetReturn&amp;quot;
+Merlin.Show
+Merlin.Get &amp;quot;State&amp;quot;, &amp;quot;Hiding&amp;quot;
+Merlin.Play &amp;quot;Greet&amp;quot;  &amp;#39;这个让他鞠躬
+Merlin.Speak &amp;quot;hello&amp;quot;  &amp;#39;这个让他说话
+Merlin.Play &amp;quot;Greet&amp;quot;
+wscript.sleep 5000
+Merlin.Speak &amp;quot;welcome &amp;quot;
+Merlin.Play &amp;quot;Greet&amp;quot;
+wscript.sleep 5000
+Merlin.Speak &amp;quot;goodbay&amp;quot;
+wscript.sleep 5000
+Merlin.Hide
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;/li&gt;
-&lt;/ol&gt;</summary><category term="Hack"></category><category term="imported blog"></category><category term=""></category></entry></feed>
+&lt;/ol&gt;</summary><category term="Hack"></category><category term="imported blog"></category></entry></feed>
