@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="zh-cn">
+<html lang="zh-cn">
 <head>
     <meta charset="utf-8">
     <title>Another Blog</title>
@@ -18,10 +18,10 @@
     <link rel="stylesheet" href="/theme/css/ty.css" type="text/css" media="all" />
     <link rel="stylesheet" href="/theme/css/highlight.css" type="text/css" media="all" />
 
-    <link href="http://ir193.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Full Atom Feed" />
-    <link href="http://ir193.github.io/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Full RSS Feed" />
-    <link href="http://ir193.github.io/feeds/hack.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Categories Atom Feed" />
-    <link href="http://ir193.github.io/feeds/hack.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Categories RSS Feed" />
+    <link href="https://ir193.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Full Atom Feed" />
+    <link href="https://ir193.github.io/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Full RSS Feed" />
+    <link href="https://ir193.github.io/feeds/hack.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Categories Atom Feed" />
+    <link href="https://ir193.github.io/feeds/hack.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Categories RSS Feed" />
     
 </head>
 <body>
@@ -30,12 +30,12 @@
     <div class="sidebar pure-u-1 pure-u-md-7-24">
         <div class="header">
             <nav class="navi">
-                <span><a href="..">Home</a></span>
-                <span class="no-mobile"><a href="../category/non-tech.html">Non-tech</a></span>
-                <span class="no-mobile"><a href="../category/life.html">life</a></span>
-                <span class="no-mobile"><a href="../category/hack.html">Hack</a></span>
+                <span><a href="https://ir193.github.io">Home</a></span>
+                <span class="no-mobile"><a href="https://ir193.github.io/category/non-tech.html">Non-tech</a></span>
+                <span class="no-mobile"><a href="https://ir193.github.io/category/life.html">life</a></span>
+                <span class="no-mobile"><a href="https://ir193.github.io/category/hack.html">Hack</a></span>
                 <span><a href="#">Projects</a></span>
-                <span><a href="../pages/about.html">About</a></span>
+                <span><a href="https://ir193.github.io/pages/about.html">About</a></span>
             </nav>
         </div>
     </div>
@@ -44,7 +44,7 @@
 <artical class="post post-preview">
     <div class="post-header">
         <h2 class="post-title">
-            <a href="../post/some_interesting_com.html" rel="bookmark" title="记下几个奇怪的Com组件">
+            <a href="https://ir193.github.io/post/some_interesting_com.html" rel="bookmark" title="记下几个奇怪的Com组件">
                 记下几个奇怪的Com组件
             </a>
         </h2>
@@ -62,12 +62,12 @@
 <li>
 <p>compatUI.Util</p>
 <p>除了Wscript.Shell和shell.application以外，这个组件也能运行程序，但是不知道这个组件是不是系统自带的。原型是：</p>
-<div class="highlight"><pre><span class="nt">Function</span><span class="err"> </span> <span class="nt">RunApplication</span><span class="o">(</span><span class="nt">pLayers</span><span class="nd">:BSTR</span><span class="o">;</span> <span class="nt">pszCmdLine</span><span class="nd">:BSTR</span><span class="o">;</span> <span class="nt">bEnableLog</span><span class="nd">:I4</span><span class="o">)</span>
+<div class="highlight"><pre><span></span><span class="nt">Function</span><span class="err"> </span> <span class="nt">RunApplication</span><span class="o">(</span><span class="nt">pLayers</span><span class="nd">:BSTR</span><span class="o">;</span> <span class="nt">pszCmdLine</span><span class="nd">:BSTR</span><span class="o">;</span> <span class="nt">bEnableLog</span><span class="nd">:I4</span><span class="o">)</span>
 </pre></div>
 
 
 <p>使用方法：</p>
-<div class="highlight"><pre>ocu.Runapplication &quot;&quot;,&quot;c:\windows\system32\cmd.exe&quot;,FALSE
+<div class="highlight"><pre><span></span>ocu.Runapplication &quot;&quot;,&quot;c:\windows\system32\cmd.exe&quot;,FALSE
 </pre></div>
 
 
@@ -78,7 +78,7 @@
 <p>MakeCAB.MakeCAB</p>
 <p>这个组件用来打CAB包，不过好像没什么用，因为XP才带这个组件，但XP自带Zip打包功能，没人会用这个吧。想想唯一有用的是向没有压缩软件的2k系统复制东西，因为2k带expand命令，可以解压。</p>
 <p>以下是简单的Vbs脚本，可以将文件夹打包成CAB包</p>
-<div class="highlight"><pre>sPath = input(&quot;请输入要打包的文件夹路径&quot;)
+<div class="highlight"><pre><span></span>sPath = input(&quot;请输入要打包的文件夹路径&quot;)
 sCab = input(&quot;请输入要CAB文件夹保存路径&quot;)
 set ocab=createobject(&quot;MakeCAB.MakeCAB&quot;)
 ocab.CreateCab sCAB,True,0,True
@@ -120,7 +120,7 @@ End SUB
 <li>
 <p>SAFRCFileDlg.FileOpen 和 UserAccounts.CommonDialog</p>
 <p>这个用来创建打开文件对话框。类似的还有UserAccounts.CommonDialog，这个功能更强大。</p>
-<div class="highlight"><pre>* SAFRCFileDlg.FileSave对象：属性有：
+<div class="highlight"><pre><span></span>* SAFRCFileDlg.FileSave对象：属性有：
 
     FileName — 指定默认文件名；
     FileType — 指定文件扩展名；
@@ -146,7 +146,7 @@ End SUB
 <li>
 <p>SAPI.SpVoice</p>
 <p>这个有点意思，可以语音读文字。一个例子：</p>
-<div class="highlight"><pre>SzBuf = InputBox( &quot;输入英文&quot;, &quot;输入&quot;, &quot;I LOVE YOU&quot; )
+<div class="highlight"><pre><span></span>SzBuf = InputBox( &quot;输入英文&quot;, &quot;输入&quot;, &quot;I LOVE YOU&quot; )
 set tack=CreateObject(&quot;SAPI.SpVoice&quot;)
 tack.Speak(SzBuf)
 </pre></div>
@@ -156,7 +156,7 @@ tack.Speak(SzBuf)
 <li>
 <p>agent.control</p>
 <p>这个也有点意思，用来产生一个officeXP那样的小助手。一个例子：</p>
-<div class="highlight"><pre>AgentControl=createobject(&quot;agent.control&quot;)
+<div class="highlight"><pre><span></span>AgentControl=createobject(&quot;agent.control&quot;)
 AgentControl.Connected = True
 AgentControl.Characters.Load &quot;Merlin&quot;, &quot;Merlin.acs&quot;
 Set Merlin = AgentControl.Characters(&quot;Merlin&quot;)
@@ -183,14 +183,14 @@ Merlin.Hide
     <div class="post-footer">
         <span class="meta-prep">Post in</span>
         <abbr class="date" title="2009-10-08T09:32:35+08:00"> 
-            <a href="../archive/2009/Oct/index.html">
+            <a href="https://ir193.github.io/archive/2009/Oct/index.html">
                 Oct 08 2009 </a>
         </abbr>
         <br />
         Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
         <span class="meta-prep"> with tags</span>
-                <a href="../tag/hack.html">Hack</a>
-                <a href="../tag/imported-blog.html">imported blog</a>
+                <a href="https://ir193.github.io/tag/hack.html">Hack</a>
+                <a href="https://ir193.github.io/tag/imported-blog.html">imported blog</a>
     </div>
     <div class="clear"></div>
 </artical>
@@ -200,7 +200,7 @@ Merlin.Hide
     var disqus_identifier = "post/some_interesting_com.html";
     (function() {
     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-    dsq.src = 'http://ir193.disqus.com/embed.js';
+    dsq.src = 'http://.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     </script>
