@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="https://ir193.github.io/" rel="alternate"></link><link href="https://ir193.github.io/feeds/non-tech.atom.xml" rel="self"></link><id>https://ir193.github.io/</id><updated>2010-12-03T10:20:00+08:00</updated><entry><title>Hello World</title><link href="https://ir193.github.io/post/hello-world.html" rel="alternate"></link><published>2010-12-03T10:20:00+08:00</published><author><name>ir193</name></author><id>tag:ir193.github.io,2010-12-03:post/hello-world.html</id><summary type="html">&lt;h2&gt;Hello World&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="https://ir193.github.io/" rel="alternate"></link><link href="https://ir193.github.io/feeds/non-tech.atom.xml" rel="self"></link><id>https://ir193.github.io/</id><updated>2016-10-10T13:43:58+08:00</updated><entry><title>重阳</title><link href="https://ir193.github.io/post/double-ninth.html" rel="alternate"></link><published>2016-10-10T13:43:58+08:00</published><author><name>ir193</name></author><id>tag:ir193.github.io,2016-10-10:post/double-ninth.html</id><summary type="html">&lt;p&gt;在手机日历上看到今天是重阳，想起了小时候学过的古诗，『独在异乡为异客，每逢佳节倍思亲』。
+然而大概是背的太多，心里并没有什么共鸣，虽然自己确实独在异乡。
+又想了一下，只记得最后一句是『遍插茱萸少一人』，却怎么也想不起来第三句是什么。&lt;/p&gt;
+&lt;p&gt;晚上又想起来了这首诗，在网上查了一下才想起来第三句是『遥知兄弟登高处』。忽然心里就有些伤感。&lt;/p&gt;
+&lt;p&gt;我是独生子，是没有亲生兄弟的，但是我爸爸却是兄弟三人。看到这句诗我一下就想起了我爸的二哥，
+我叫他二大爷。他在我来美国之前不到一个月突发心脏病去世了。看到了这诗我特别想他。&lt;/p&gt;
+&lt;p&gt;我二大爷小时候患了强直性脊柱炎，落下了很严重的后遗症。他没有子女，把我视做亲生孩子一样看待。
+和我爸爸的兄弟之情也很深厚。如今却先行一步去了另一个世界，不知算不算『登高处』。
+遍插茱萸，少了在异乡的我，以后还有机会重聚。少了我爸爸的兄弟，可便再没有机会重聚了。&lt;/p&gt;
+&lt;p&gt;小时候背诗，要分析两个『异』字、『倍思亲』写的哪里好。却想不到最后打动我的平淡的第三句。
+也许王维当初写这首诗时候，也是在这一句上倾注了最多的感情。&lt;/p&gt;
+&lt;p&gt;毕竟这首诗题目是《九月九日忆山东兄弟》&lt;/p&gt;
+&lt;p&gt;&lt;img alt="在UCSC校园登高" src="/pictures/99/ucsc-campus.jpg" /&gt;&lt;/p&gt;</summary></entry><entry><title>Hello World</title><link href="https://ir193.github.io/post/hello-world.html" rel="alternate"></link><published>2010-12-03T10:20:00+08:00</published><author><name>ir193</name></author><id>tag:ir193.github.io,2010-12-03:post/hello-world.html</id><summary type="html">&lt;h2&gt;Hello World&lt;/h2&gt;
 &lt;p&gt;This is the first post on github.&lt;/p&gt;
 &lt;p&gt;The blog is base on &lt;a href="http://www.getpelican.com/"&gt;pelican&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;The theme is based on &lt;a href="http://wordpress.org/themes/responsive"&gt;responsive&lt;/a&gt; theme of wordpress&lt;/p&gt;</summary></entry></feed>
