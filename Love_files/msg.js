@@ -1527,5 +1527,9 @@ msg = [
 	{
 		"date": "2019-9-1",
 		"msg" : "今天帮领导注册了写代码的网站，教程的网页也搭好了，等我第一篇写完就给领导看"
+	},
+	{
+		"date": "2019-9-2",
+		"msg" : "<a href='https://faycoder.github.io/guide/index.html'>第一篇请看这里</a>"
 	}
 ]
