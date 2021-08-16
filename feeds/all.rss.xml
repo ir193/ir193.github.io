@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="https://ir193.github.io/" rel="alternate"></link><link href="https://ir193.github.io/feeds/all.rss.xml" rel="self"></link><id>https://ir193.github.io/</id><updated>2016-10-10T13:43:58+08:00</updated><entry><title>重阳</title><link href="https://ir193.github.io/double-ninth.html" rel="alternate"></link><published>2016-10-10T13:43:58+08:00</published><updated>2016-10-10T13:43:58+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2016-10-10:/double-ninth.html</id><summary type="html">&lt;p&gt;在手机日历上看到今天是重阳，想起了小时候学过的古诗，『独在异乡为异客，每逢佳节倍思亲』。&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog</title><link href="https://ir193.github.io/" rel="alternate"></link><link href="https://ir193.github.io/feeds/all.rss.xml" rel="self"></link><id>https://ir193.github.io/</id><updated>2016-10-10T13:43:58+08:00</updated><entry><title>重阳</title><link href="https://ir193.github.io/post/double-ninth.html" rel="alternate"></link><published>2016-10-10T13:43:58+08:00</published><updated>2016-10-10T13:43:58+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2016-10-10:/post/double-ninth.html</id><summary type="html">&lt;p&gt;在手机日历上看到今天是重阳，想起了小时候学过的古诗，『独在异乡为异客，每逢佳节倍思亲』。&lt;/p&gt;
 &lt;p&gt;然而大概是背的太多，心里并没有什么共鸣，虽然自己确实独在异乡。
 又想了一下，只记得最后一句是『遍插茱萸少一人』，却怎么也想不起来第三句是什么。&lt;/p&gt;
 &lt;p&gt;晚上又想起来了这首诗，在网上查了一下才想起来第三句是『遥知兄弟登高处』。忽然心里就有些伤感。自己独在异乡其实没什么的，倍思亲也并不是希望亲人能在身边。「少一人」少的是作者，作者伤感其实是因为知道远方的亲人一定在担心漂泊在外的「我」。前两句是作者的视角，只是简单的思乡，第三句把视角拉到远方亲人身上，互相关心互相思念的兄弟之情一下深了很多。&lt;/p&gt;
@@ -13,7 +13,7 @@
 &lt;p&gt;小时候背诗，要分析两个「异」字、「倍思亲」写的哪里好。却想不到最后打动我的平淡的第三句。&lt;/p&gt;
 &lt;p&gt;我是独生子，是没有亲生兄弟的，但是我爸爸是兄弟三人。看到这句诗我一下就想起了我爸的二哥，
 我叫他二大爷。他在我来美国之前不到一个月突发心脏病去世了。看到了这诗我特别想他。&lt;/p&gt;
-&lt;p&gt;我二大爷没有子女，把我视做亲生孩子一样看待。小时候患了强直性脊柱炎，落下了很严重的后遗症，但是把我照顾的很好。他为了照顾我，几十年烟龄的他说戒烟就戒烟，没有借助任何药物也没有复吸过一次。如今却先行一步去了另一个世界，不知算不算『登高处』，我和他也不知道谁算是在异乡。但是我可以确定如果真的有另一个世界，他一定在牵挂着我。&lt;/p&gt;</content><category term="Life"></category><category term="non-tech"></category></entry><entry><title>CVE-2013-2596 本地提权漏洞</title><link href="https://ir193.github.io/cve-2013-2596.html" rel="alternate"></link><published>2013-10-17T13:10:58+08:00</published><updated>2013-10-17T13:10:58+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-17:/cve-2013-2596.html</id><summary type="html">&lt;p&gt;&lt;a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596"&gt;cve-2013-2596&lt;/a&gt;本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）&lt;/p&gt;
+&lt;p&gt;我二大爷没有子女，把我视做亲生孩子一样看待。小时候患了强直性脊柱炎，落下了很严重的后遗症，但是把我照顾的很好。他为了照顾我，几十年烟龄的他说戒烟就戒烟，没有借助任何药物也没有复吸过一次。如今却先行一步去了另一个世界，不知算不算『登高处』，我和他也不知道谁算是在异乡。但是我可以确定如果真的有另一个世界，他一定在牵挂着我。&lt;/p&gt;</content><category term="Life"></category><category term="non-tech"></category></entry><entry><title>CVE-2013-2596 本地提权漏洞</title><link href="https://ir193.github.io/post/cve-2013-2596.html" rel="alternate"></link><published>2013-10-17T13:10:58+08:00</published><updated>2013-10-17T13:10:58+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-17:/post/cve-2013-2596.html</id><summary type="html">&lt;p&gt;&lt;a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596"&gt;cve-2013-2596&lt;/a&gt;本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）&lt;/p&gt;
 &lt;!--more--&gt;
 
 &lt;p&gt;网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 &lt;code&gt;/drivers/video/fbmem.c&lt;/code&gt;。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。&lt;/p&gt;
@@ -47,7 +47,7 @@
 &lt;span class="nt"&gt;c0077684&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;1a00000a&lt;/span&gt;        &lt;span class="nt"&gt;bne&lt;/span&gt;     &lt;span class="nt"&gt;c00776b4&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;sys_setuid&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nt"&gt;0x64&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;这里有另一篇分析 http://securityblog.org/2013/04/30/SE-Android-and-the-motochopper-exploit/&lt;/p&gt;</content><category term="Security"></category><category term="Security"></category><category term="linux"></category></entry><entry><title>CVE-2013-2094 本地提权漏洞</title><link href="https://ir193.github.io/cve-2013-2094.html" rel="alternate"></link><published>2013-10-09T01:06:33+08:00</published><updated>2013-10-09T01:06:33+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-09:/cve-2013-2094.html</id><summary type="html">&lt;p&gt;cve-2013-2094是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了&lt;code&gt;PERF_EVENT&lt;/code&gt;的linux系统。利用该漏洞，通过&lt;code&gt;perf_event_open&lt;/code&gt;系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了&lt;code&gt;PERF_EVENT&lt;/code&gt;的linux系统。利用该漏洞，通过&lt;code&gt;perf_event_open&lt;/code&gt;系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
+&lt;p&gt;这里有另一篇分析 http://securityblog.org/2013/04/30/SE-Android-and-the-motochopper-exploit/&lt;/p&gt;</content><category term="Security"></category><category term="Security"></category><category term="linux"></category></entry><entry><title>CVE-2013-2094 本地提权漏洞</title><link href="https://ir193.github.io/post/cve-2013-2094.html" rel="alternate"></link><published>2013-10-09T01:06:33+08:00</published><updated>2013-10-09T01:06:33+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-09:/post/cve-2013-2094.html</id><summary type="html">&lt;p&gt;cve-2013-2094是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了&lt;code&gt;PERF_EVENT&lt;/code&gt;的linux系统。利用该漏洞，通过&lt;code&gt;perf_event_open&lt;/code&gt;系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了&lt;code&gt;PERF_EVENT&lt;/code&gt;的linux系统。利用该漏洞，通过&lt;code&gt;perf_event_open&lt;/code&gt;系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
 &lt;!--more--&gt;
 
 &lt;p&gt;发生漏洞的是linux kernel中的perf event子系统，perf event是linux系统中提供性能分析接口的子系统，于2.6.31之后引入linux，之前被称为 Performance Counters for Linux (PCL)。通过syscall函数，用户可以调用perf event子系统提供的功能。由于perf event中的漏洞，用户可以通过精心构造的调用在任何内存地址写入数据，从而获得系统的最高权限。&lt;/p&gt;
@@ -173,12 +173,12 @@
 &lt;li&gt;
 &lt;p&gt;Huawei U9508 官方ROM - 内核不支持perf_event&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ul&gt;</content><category term="Security"></category><category term="Security"></category><category term="linux"></category></entry><entry><title>快毕业了</title><link href="https://ir193.github.io/graduation-is-near.html" rel="alternate"></link><published>2013-07-11T21:33:26+08:00</published><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
+&lt;/ul&gt;</content><category term="Security"></category><category term="Security"></category><category term="linux"></category></entry><entry><title>快毕业了</title><link href="https://ir193.github.io/post/graduation-is-near.html" rel="alternate"></link><published>2013-07-11T21:33:26+08:00</published><updated>2013-07-11T21:33:26+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-07-11:/post/graduation-is-near.html</id><summary type="html">&lt;p&gt;开始博客时候说要每周写一些博客，结果和前几次一样第二周就断掉了……为了避免又荒废掉博客，只好再水一篇技术无关的，写一写最近发生的事。&lt;/p&gt;
 &lt;!--more--&gt;
 
 &lt;h3&gt;毕业旅行&lt;/h3&gt;
 &lt;p&gt;最近最重要的事就是跟同学去了毕业旅行。因为各种事情都赶到这个时间了，所以最后过程不可谓不艰辛。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="https://ir193.github.io/map.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="https://ir193.github.io/post/map.png"&gt;&lt;/p&gt;
 &lt;p&gt;先是27号晚上课题组吃饭，又吃了不少生鱼片……然后28号去邯郸看女朋友，在邯郸玩2天，然后30号早晨一早回北京，中午11到回了一下宿舍，下午1点又坐城际回家同学聚会，下了火车直接拉着箱子去吃饭。1号中午回北京，没回学校直接和志颖邈邈在北京北站一起上火车去赤峰。几天的折腾下来确实相当的累，不过幸运的是补到了卧铺票，晚上睡了几个小时。&lt;/p&gt;
 &lt;p&gt;在去往赤峰的火车上遇到了一个叔叔，带了一个似乎不会说中文的年轻的女人。晚上下车时候听到了女人拼写了“V-i-e-t-n-a-m”。莫非是遇到了传说中的……越南新娘？&lt;/p&gt;
 &lt;p&gt;到了赤峰市的天义，打车去找大部队。赤峰前一天刚刚下过雨，所以路极其难走，出租车走到一半就把我们放下了，换成了一个面包车。不过最后还是顺利的找到了大部队。&lt;/p&gt;
@@ -187,12 +187,12 @@
 
 &lt;h3&gt;毕业旅行&lt;/h3&gt;
 &lt;p&gt;最近最重要的事就是跟同学去了毕业旅行。因为各种事情都赶到这个时间了，所以最后过程不可谓不艰辛。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="https://ir193.github.io/map.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="https://ir193.github.io/post/map.png"&gt;&lt;/p&gt;
 &lt;p&gt;先是27号晚上课题组吃饭，又吃了不少生鱼片……然后28号去邯郸看女朋友，在邯郸玩2天，然后30号早晨一早回北京，中午11到回了一下宿舍，下午1点又坐城际回家同学聚会，下了火车直接拉着箱子去吃饭。1号中午回北京，没回学校直接和志颖邈邈在北京北站一起上火车去赤峰。几天的折腾下来确实相当的累，不过幸运的是补到了卧铺票，晚上睡了几个小时。&lt;/p&gt;
 &lt;p&gt;在去往赤峰的火车上遇到了一个叔叔，带了一个似乎不会说中文的年轻的女人。晚上下车时候听到了女人拼写了“V-i-e-t-n-a-m”。莫非是遇到了传说中的……越南新娘？&lt;/p&gt;
 &lt;p&gt;到了赤峰市的天义，打车去找大部队。赤峰前一天刚刚下过雨，所以路极其难走，出租车走到一半就把我们放下了，换成了一个面包车。不过最后还是顺利的找到了大部队。&lt;/p&gt;
 &lt;p&gt;找到后本想去漂流，但因为水流太急，只能回来。路过了一个水库，景色相当不错，照了几张照片，下来划了划船，拍了很不错的几张照片。&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="https://ir193.github.io/lake.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="https://ir193.github.io/post/lake.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;下午一直在坐车，长达5个小时，比较无聊，期间体验了草原的大雨。晚上在赤峰市吃了蒙餐，很是丰盛。&lt;/p&gt;
 &lt;p&gt;第二天去了草原，又是长达几个小时的车。不过草原的景色相当的漂亮，所谓的石林也确实有些怪石值得一看。&lt;/p&gt;
 &lt;p&gt;第三天回京。回程的火车是硬座，不过打牌、玩三国杀过的很快。晚上11点到北京，打车回宿舍时还发生了写小插曲，因为最后剩下了5个人一起走，所以只能打黑车，黑车要价很高，本来说好到五道口50，听说到清华之后忽然加到了70。我想起了一个划价的方法，让他先到五道口，快到了之后让他开，按每公里5块，给10块，开到2km我们就下车。于是他最后就妥协到东北门60，呵呵。&lt;/p&gt;
@@ -204,7 +204,7 @@
 &lt;h3&gt;毕业没有感&lt;/h3&gt;
 &lt;p&gt;快毕业了，确实没什么感觉，除了感觉手续很复杂。毕业晚会那天女朋友正好来北京，我们一起看了晚会，算是个小惊喜。毕业晚会一点不煽情，和学生节没啥区别。对大学的同学还是很有感情的，比初中高中都要深一点，但是还是没有特别的舍不得的感觉，可能我就这样吧。&lt;/p&gt;
 &lt;p&gt;有时候想想大学四年，好像什么都没有做，兴趣上转了一圈，又回到了当初不想搞的安全。成绩上拿不出什么能看的东西，只能说勉强够用。感情上倒还不错，是我当初怎么想不到的。给大学整体打分的话，和平时的各种考试一样，还算不错但离优秀很远。未来嘛，想想就头大。&lt;/p&gt;
-&lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</content><category term="life"></category><category term="non-tech"></category></entry><entry><title>这次真的开始写博客</title><link href="https://ir193.github.io/start-blogging.html" rel="alternate"></link><published>2013-06-23T11:03:50+08:00</published><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:/start-blogging.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，是第一次用github pages时候写的，当时还专门写了一个&lt;a href="https://github.com/ir193/Responsive-Pelican"&gt;pelican theme&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;毕业了，要学的却又太多。最舍不得的还是学生的这个身份。&lt;/p&gt;</content><category term="life"></category><category term="non-tech"></category></entry><entry><title>这次真的开始写博客</title><link href="https://ir193.github.io/post/start-blogging.html" rel="alternate"></link><published>2013-06-23T11:03:50+08:00</published><updated>2013-06-23T11:03:50+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-06-23:/post/start-blogging.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，是第一次用github pages时候写的，当时还专门写了一个&lt;a href="https://github.com/ir193/Responsive-Pelican"&gt;pelican theme&lt;/a&gt;&lt;/p&gt;
 &lt;!--more--&gt;
 
 &lt;p&gt;记得大一入学的时候，Google App Engine还没有墙，用micolog搭建了一个博客，在机房改主题、折腾不亦乐乎。可是后来折腾差不多了也就没心思写博客了。&lt;/p&gt;
@@ -253,7 +253,7 @@
 &lt;li&gt;
 &lt;p&gt;第二个问题才是问题。这个东西确实难讲。一方面又觉得知识就是应该被分享的，只有分享了才有价值，一方面又觉得如果真的github被墙很难受，所以不想让太多非技术的人知道。哎，尽量分享知识又不要降低门槛吧。&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</content><category term="life"></category><category term="non-tech"></category></entry><entry><title>几个雷客图ASP站长安全助手的小问题</title><link href="https://ir193.github.io/lake2_bug.html" rel="alternate"></link><published>2009-10-08T09:32:35+08:00</published><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:/lake2_bug.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的机房写的。&lt;/p&gt;
+&lt;/ol&gt;</content><category term="life"></category><category term="non-tech"></category></entry><entry><title>几个雷客图ASP站长安全助手的小问题</title><link href="https://ir193.github.io/post/lake2_bug.html" rel="alternate"></link><published>2009-10-08T09:32:35+08:00</published><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:/post/lake2_bug.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的机房写的。&lt;/p&gt;
 &lt;p&gt;从电脑里翻出来这个真是百感交集啊，现在来看这篇文章，这些小trick确实是原创的，后来也没有再别处听说过。当然这与asp的没落、我不再关注web安全有着不小关系。&lt;/p&gt;
 &lt;p&gt;大学四年，安全方面的技术确实没有积累，是根本没有看。而现在又想转码，似乎绕了一个圈子又回到了开始。而一圈走下来却发现自己没有留下什么。&lt;/p&gt;
 &lt;h3&gt;以下是导入的正文&lt;/h3&gt;
@@ -328,7 +328,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;雷客图总的来说是一个相当优秀的ASP木马查杀工具，其中有很多东西值得学习。我小菜不敢挑战lake2大侠，无非是在被忽视的地方小打小闹一下。最后，希望lake2多开发一些工具，多公布几个漏洞。&lt;/p&gt;
-&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</content><category term="Security"></category><category term="Security"></category><category term="imported blog"></category></entry><entry><title>记下几个奇怪的Com组件</title><link href="https://ir193.github.io/some_interesting_com.html" rel="alternate"></link><published>2009-10-08T09:32:35+08:00</published><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:/some_interesting_com.html</id><summary type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</content><category term="Security"></category><category term="Security"></category><category term="imported blog"></category></entry><entry><title>记下几个奇怪的Com组件</title><link href="https://ir193.github.io/post/some_interesting_com.html" rel="alternate"></link><published>2009-10-08T09:32:35+08:00</published><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:/post/some_interesting_com.html</id><summary type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;当时写这篇文章的原因是在写一个asp的webshell，asp的全部功能几乎都要靠ActiveX完成，所以当时几乎把系统注册表里CLASSID下的全部键值都试过了一遍，只是想找找有没有不常见的，提供合适功能的组件。最后当然是没有啦。&lt;/p&gt;
 &lt;p&gt;后来，webshell基本上写出来了，只可惜父母的电脑被学校收走了，另外一个U盘被我摔坏了，所以这个webshell未经面世就消失了，真是无比遗憾。&lt;/p&gt;
 &lt;!--more--&gt;
