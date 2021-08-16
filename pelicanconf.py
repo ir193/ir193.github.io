@@ -22,6 +22,8 @@ CATEGORY_FEED_ATOM = 'feeds/all.atom.xml'
 CATEGORY_FEED_RSS = 'feeds/{slug}.rss.xml'
 CATEGORY_FEED_ATOM = 'feeds/{slug}.atom.xml'
 TRANSLATION_FEED_ATOM = None
+ARTICLE_URL = 'post/{slug}.html'
+ARTICLE_SAVE_AS = 'post/{slug}.html'
 AUTHOR_SAVE_AS = ''
 AUTHORS_SAVE_AS = ''
 AUTHOR_FEED_ATOM = None
@@ -41,9 +43,11 @@ DEFAULT_PAGINATION = False
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
-
+STATIC_PATHS = [
+    '.nojekyll',
+    ]
 # path-specific metadata
 EXTRA_PATH_METADATA = {
     'extra/robots.txt': {'path': 'robots.txt'},
-    'extra/.nojykell': {'path': '.nojykell'},
+    '.nojekyll': {'path': '.nojekyll'},
     }
