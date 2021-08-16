@@ -1,0 +1,230 @@
+/**
+ * ty.css | http://github.com/chadluo/ty.css
+ * out-of-box typography stylesheets
+ * yukirock<i@yukir.net>
+ */
+
+
+
+/**
+ * resets
+ */
+@media screen,handheld { body { font-size: 16px; } }
+@media print           { body { font-size: 12pt; } }
+.ty h1,
+.ty h2,
+.ty h3,
+.ty h4,
+.ty h5,
+.ty h6,
+.ty blockquote,
+.ty address {
+    margin-top:     0;
+    margin-bottom:  0;
+}
+
+
+/**
+ * basic .ty
+ *
+ * default styles:
+ *   1.5 line-height
+ *   indent
+ */
+
+.ty {
+    padding-top:    0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.ty h1 {
+    font-size:      2rem;
+    line-height:    2.5rem;
+    padding-top:    1rem;
+    padding-bottom: 1rem;
+}
+.ty h2 {
+    font-size:      1.5rem;
+    line-height:    2rem;
+    padding-top:    1rem;
+    padding-bottom: 1rem;
+}
+.ty h3 {
+    font-size:      1rem;
+    line-height:    2rem;
+    padding-top:    0.25rem;
+    padding-bottom: 0.25rem;
+}
+.ty h4 {
+    font-size:      1rem;
+    line-height:    1.5rem;
+    padding-top:    0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.ty p,
+.ty blockquote,
+.ty address {
+    font-size:      1rem;
+    line-height:    1.5rem;
+}
+
+.ty .intro {
+    text-indent:    0;
+    line-height:    1.5rem;
+    padding-top:    0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top:     0;
+    margin-bottom:  0;
+    font-size:      calc(1rem + 2px);
+    position:       relative;
+    top:            -1px; /* HACK shift on baseline */
+}
+
+.ty ul,
+.ty ol,
+.ty dl {
+    padding-top:    0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top:     0;
+    margin-bottom:  0;
+}
+
+.ty li,
+.ty dt,
+.ty dd {
+    line-height:    1.5rem;
+}
+
+.ty li ul,
+.ty li ol,
+.ty dd ul,
+.ty dd ol {
+    padding-top:    0;
+    padding-bottom: 0;
+}
+
+.ty pre {
+    padding:        1rem;
+    margin-top:     0.75rem;
+    margin-bottom:  0.75rem;
+    font-size:      0.8rem;
+    line-height:    1rem;
+}
+
+.ty pre + pre {
+    margin-top:     1rem;
+}
+
+.ty code {
+    line-height:    1rem;
+}
+
+/* indent */
+
+.ty p + p,
+.ty div + p,
+.ty blockquote + p {
+  text-indent:      1em;
+}
+
+.ty hr {
+    text-align:     center;
+    line-height:    2rem;
+    height:         2rem;
+    border:         none;
+    margin-top:     0;
+    margin-bottom:  0;
+}
+
+.ty hr:before {
+    content:        "\FF0A";
+    font-size:      1rem;
+    font-family:    serif;
+    opacity:        0.5;
+}
+
+/* double line-height */
+
+.ty-wide {
+    padding-top:    0;
+    padding-bottom: 0;
+}
+
+.ty-wide h1 {
+    line-height:    2.5rem;
+    padding-top:    1.25rem;
+    padding-bottom: 1.25rem;
+}
+.ty-wide h2 {
+    font-size:      1.5rem;
+    line-height:    2rem;
+    padding-top:    1.25rem;
+    padding-bottom: 1.25rem;
+}
+.ty-wide h3 {
+    font-size:      1rem;
+    line-height:    1.5rem;
+    padding-top:    1.25rem;
+    padding-bottom: 1.25rem;
+}
+.ty-wide h4 {
+    font-size:      1rem;
+    line-height:    2rem;
+}
+
+.ty-wide p,
+.ty-wide blockquote,
+.ty-wide address {
+    font-size:      1rem;
+    line-height:    2rem;
+}
+
+.ty-wide .intro {
+    text-indent:    0;
+    padding-top:    0.75rem;
+    padding-bottom: 0.75rem;
+    margin-top:     0;
+    margin-bottom:  0;
+    font-size:      calc(1rem + 2px);
+    position:       relative;
+    top:            -1px; /* HACK shift on baseline */
+}
+
+.ty-wide ul,
+.ty-wide ol {
+    padding-top:    0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.ty-wide ul,
+.ty-wide ol,
+.ty-wide li {
+    line-height:    1.5rem;
+}
+
+.ty-wide .ty-wide-blocklist {
+    padding-top:    0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.ty-wide blockquote {
+    margin:         0.75rem -1rem;
+    padding-top:    0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.ty-wide strong {
+    line-height:    1rem;
+}
+
+.ty-p-spacing p {
+    text-indent:    0;
+}
+
+.ty-p-spacing p + p,
+.ty-p-spacing blockquote + p {
+    text-indent:    0;
+    margin-top:     1em;
+}
+
