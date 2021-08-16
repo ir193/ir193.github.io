@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Another Blog - Security</title><link href="https://ir193.github.io/" rel="alternate"></link><link href="https://ir193.github.io/feeds/security.atom.xml" rel="self"></link><id>https://ir193.github.io/</id><updated>2013-10-17T13:10:58+08:00</updated><entry><title>CVE-2013-2596 本地提权漏洞</title><link href="https://ir193.github.io/cve-2013-2596.html" rel="alternate"></link><published>2013-10-17T13:10:58+08:00</published><updated>2013-10-17T13:10:58+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-17:/cve-2013-2596.html</id><summary type="html">&lt;p&gt;&lt;a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596"&gt;cve-2013-2596&lt;/a&gt;本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）&lt;/p&gt;
+&lt;!--more--&gt;
+
+&lt;p&gt;网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 &lt;code&gt;/drivers/video/fbmem.c&lt;/code&gt;。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。&lt;/p&gt;
+&lt;p&gt;手上的手机，联想860i、华为荣耀四核，全部受这个漏洞影响。其中，联想860i不能成功提权但是重启，华为U9806成功提权。&lt;/p&gt;
+&lt;p&gt;根据目前搜到的信息 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596"&gt;cve-2013-2596&lt;/a&gt;本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）&lt;/p&gt;
+&lt;!--more--&gt;
+
+&lt;p&gt;网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 &lt;code&gt;/drivers/video/fbmem.c&lt;/code&gt;。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。&lt;/p&gt;
+&lt;p&gt;手上的手机，联想860i、华为荣耀四核，全部受这个漏洞影响。其中，联想860i不能成功提权但是重启，华为U9806成功提权。&lt;/p&gt;
+&lt;p&gt;根据目前搜到的信息，最早发布的exploit是xda论坛上的&lt;a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;amp;page=4"&gt;motochopper&lt;/a&gt;，只是作为工具发布，没有源代码和原理分析。&lt;/p&gt;
+&lt;p&gt;另外xda论坛上有人根据&lt;a href="http://forum.xda-developers.com/showthread.php?t=2252248&amp;amp;page=4"&gt;motochopper&lt;/a&gt;做逆向分析，猜测了原理。重新写出的利用工具&lt;a href="http://forum.xda-developers.com/showthread.php?p=40873964"&gt;kernelchopper&lt;/a&gt;，开源，但比较不好用，只提供了写内存功能，需要自己写内存。&lt;/p&gt;
+&lt;h3&gt;利用方法&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/torvalds/linux/commit/fc9bbca8f650e5f738af8806317c0a041a48ae4a"&gt;Patch地址&lt;/a&gt;
+目前都这个漏洞的原理还没有搞清楚。应该是个整数溢出漏洞，而且属于相当容易利用的。使用mmap可以直接将内核空间map到用户空间上。&lt;/p&gt;
+&lt;p&gt;motochopper将内存映射之后，修改了当前用户的uid，从2000(shell)到0(root)。&lt;/p&gt;
+&lt;p&gt;而xda论坛上介绍的方法是找到&lt;code&gt;sys_setuid&lt;/code&gt;代码的内存地址，爆破。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;c0077650&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;sys_setuid&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;:&lt;/span&gt;
+&lt;span class="nt"&gt;c0077650&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e92d40f8&lt;/span&gt;        &lt;span class="nt"&gt;push&lt;/span&gt;    &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="err"&gt;r3,&lt;/span&gt; &lt;span class="err"&gt;r4,&lt;/span&gt; &lt;span class="err"&gt;r5,&lt;/span&gt; &lt;span class="err"&gt;r6,&lt;/span&gt; &lt;span class="err"&gt;r7,&lt;/span&gt; &lt;span class="err"&gt;lr&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nt"&gt;c0077654&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e1a05000&lt;/span&gt;        &lt;span class="nt"&gt;mov&lt;/span&gt;     &lt;span class="nt"&gt;r5&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;r0&lt;/span&gt;
+&lt;span class="nt"&gt;c0077658&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;eb0040d6&lt;/span&gt;        &lt;span class="nt"&gt;bl&lt;/span&gt;      &lt;span class="nt"&gt;c00879b8&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;prepare_creds&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;c007765c&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e2504000&lt;/span&gt;        &lt;span class="nt"&gt;subs&lt;/span&gt;    &lt;span class="nt"&gt;r4&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;r0&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="nn"&gt;0&lt;/span&gt;
+&lt;span class="nt"&gt;c0077660&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;0a000027&lt;/span&gt;        &lt;span class="nt"&gt;beq&lt;/span&gt;     &lt;span class="nt"&gt;c0077704&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;sys_setuid&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nt"&gt;0xb4&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;c0077664&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e1a0200d&lt;/span&gt;        &lt;span class="nt"&gt;mov&lt;/span&gt;     &lt;span class="nt"&gt;r2&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;sp&lt;/span&gt;
+&lt;span class="nt"&gt;c0077668&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e3c23d7f&lt;/span&gt;        &lt;span class="nt"&gt;bic&lt;/span&gt;     &lt;span class="nt"&gt;r3&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;r2&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="nn"&gt;8128&lt;/span&gt;   &lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;0x1fc0&lt;/span&gt;
+&lt;span class="nt"&gt;c007766c&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e3c3303f&lt;/span&gt;        &lt;span class="nt"&gt;bic&lt;/span&gt;     &lt;span class="nt"&gt;r3&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;r3&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="nn"&gt;63&lt;/span&gt;     &lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;0x3f&lt;/span&gt;
+&lt;span class="nt"&gt;c0077670&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e3a00007&lt;/span&gt;        &lt;span class="nt"&gt;mov&lt;/span&gt;     &lt;span class="nt"&gt;r0&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="nn"&gt;7&lt;/span&gt;
+&lt;span class="nt"&gt;c0077674&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e593300c&lt;/span&gt;        &lt;span class="nt"&gt;ldr&lt;/span&gt;     &lt;span class="nt"&gt;r3&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#12&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;
+&lt;span class="nt"&gt;c0077678&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e59362fc&lt;/span&gt;        &lt;span class="nt"&gt;ldr&lt;/span&gt;     &lt;span class="nt"&gt;r6&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;r3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;#764&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;  &lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;0x2fc&lt;/span&gt;
+&lt;span class="nt"&gt;c007767c&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;ebffd80f&lt;/span&gt;        &lt;span class="nt"&gt;bl&lt;/span&gt;      &lt;span class="nt"&gt;c006d6c0&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;nsown_capable&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;c0077680&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;e3500000&lt;/span&gt;        &lt;span class="nt"&gt;cmp&lt;/span&gt;     &lt;span class="nt"&gt;r0&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="nn"&gt;0&lt;/span&gt;
+&lt;span class="nt"&gt;c0077684&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;       &lt;span class="nt"&gt;1a00000a&lt;/span&gt;        &lt;span class="nt"&gt;bne&lt;/span&gt;     &lt;span class="nt"&gt;c00776b4&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;sys_setuid&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nt"&gt;0x64&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里有另一篇分析 http://securityblog.org/2013/04/30/SE-Android-and-the-motochopper-exploit/&lt;/p&gt;</content><category term="Security"></category><category term="Security"></category><category term="linux"></category></entry><entry><title>CVE-2013-2094 本地提权漏洞</title><link href="https://ir193.github.io/cve-2013-2094.html" rel="alternate"></link><published>2013-10-09T01:06:33+08:00</published><updated>2013-10-09T01:06:33+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2013-10-09:/cve-2013-2094.html</id><summary type="html">&lt;p&gt;cve-2013-2094是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了&lt;code&gt;PERF_EVENT&lt;/code&gt;的linux系统。利用该漏洞，通过&lt;code&gt;perf_event_open&lt;/code&gt;系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2094"&gt;cve-2013-2094&lt;/a&gt;是于2013年4月前后发现的linux kernel本地漏洞，该漏洞影响3.8.9之前开启了&lt;code&gt;PERF_EVENT&lt;/code&gt;的linux系统。利用该漏洞，通过&lt;code&gt;perf_event_open&lt;/code&gt;系统调用，本地用户可以获得系统的最高权限。&lt;/p&gt;
+&lt;!--more--&gt;
+
+&lt;p&gt;发生漏洞的是linux kernel中的perf event子系统，perf event是linux系统中提供性能分析接口的子系统，于2.6.31之后引入linux，之前被称为 Performance Counters for Linux (PCL)。通过syscall函数，用户可以调用perf event子系统提供的功能。由于perf event中的漏洞，用户可以通过精心构造的调用在任何内存地址写入数据，从而获得系统的最高权限。&lt;/p&gt;
+&lt;p&gt;引起cve-2013-2094漏洞的是位于&lt;a href="http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/kernel/events/core.c?id=8176cced706b5e5d15887584150764894e94e02f"&gt;kernel/events/core.c&lt;/a&gt;文件中的&lt;code&gt;perf_swevent_init&lt;/code&gt;函数。当使用syscall打开&lt;code&gt;perf_event&lt;/code&gt;的file descriptor时，该函数被调用。&lt;/p&gt;
+&lt;p&gt;在受影响的版本中，core.c关键部分内容如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;static&lt;/span&gt; &lt;span class="n"&gt;int&lt;/span&gt; &lt;span class="n"&gt;perf_swevent_init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;perf_event&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nf"&gt;event&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;int&lt;/span&gt; &lt;span class="n"&gt;event_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nf"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  &lt;span class="c1"&gt;//dangerous!&lt;/span&gt;
+
+    &lt;span class="cm"&gt;/*&lt;/span&gt;
+&lt;span class="cm"&gt;     * ....omit some code...&lt;/span&gt;
+&lt;span class="cm"&gt;     */&lt;/span&gt;
+
+    &lt;span class="nf"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="n"&gt;PERF_COUNT_SW_MAX&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ENOENT&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="cm"&gt;/*&lt;/span&gt;
+&lt;span class="cm"&gt;     * .........omit........&lt;/span&gt;
+&lt;span class="cm"&gt;     */&lt;/span&gt;
+
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;由于将&lt;code&gt;event_id&lt;/code&gt;定义为了有符号型整数，而后面又只检查了&lt;code&gt;event_id&lt;/code&gt;的上界，所以当值为负时，即可越过检查，继续执行后面的代码&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;!&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nc"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;swevent_hlist_get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;atomic_inc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;perf_swevent_enabled&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;event_id&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="k"&gt;destroy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sw_perf_event_destroy&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;其中，&lt;code&gt;static_key_slow_inc&lt;/code&gt;函数将某地址内容做inc。&lt;/p&gt;
+&lt;p&gt;当使用负数值的&lt;code&gt;event_id&lt;/code&gt;调用时，&lt;code&gt;perf_swevent_enabled[event_id]&lt;/code&gt;将指向内核空间，如，在Cent OS 64bit系统中，当&lt;code&gt;event_id = -1&lt;/code&gt;调用时，&lt;code&gt;perf_swevent_enabled[event_id]&lt;/code&gt;的地址为:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="mf"&gt;0&lt;/span&gt;&lt;span class="n"&gt;xfffffffffffffffe&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mf"&gt;4&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mf"&gt;0&lt;/span&gt;&lt;span class="n"&gt;xffffffff81f360c0&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mf"&gt;0&lt;/span&gt;&lt;span class="n"&gt;xFFFFFFFF81F360B8&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;该地址指向内核空间。&lt;/p&gt;
+&lt;p&gt;而当file descriptor关闭时，由于&lt;code&gt;event_id&lt;/code&gt;定义为u64型，所以关闭时做dec时，地址指向的是用户空间。&lt;/p&gt;
+&lt;p&gt;所以当我们用负数值调用&lt;code&gt;perf_event_open&lt;/code&gt;时，将可以在&lt;code&gt;perf_swevent_enabled&lt;/code&gt;地址后面任意地址写入数据。&lt;/p&gt;
+&lt;h3&gt;x64下的利用思路&lt;/h3&gt;
+&lt;p&gt;x64架构下，该漏洞比较容易利用，需要的信息更少，exploit执行更快。方法简单来说是修改IDT中 int 4 的中断向量。x64的linux中，Offset hight bits和Offset middle bits是分别保存的，而将 int 4 的高位 0xffffffff 加1之后，中断向量将指向用户空间。而将shellcode放置在用户空间的这段内存上，即可获得系统最高权限。&lt;/p&gt;
+&lt;p&gt;具体来说，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;使用-1和-2调用，得到数组的偏移值。&lt;/p&gt;
+&lt;p&gt;使用-1和-2调用，在file descriptor被关闭后，将使 0x38000000 附近的内存中某两个值减1，通过搜索可以确定perf_swevent_enabled的编译值，并保存起来方便利用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将shellcode放入适当的用户空间内存中&lt;/p&gt;
+&lt;p&gt;使用 sidt 指令可以获得IDT的地址，然后使用 mmap 将 shellcode 放入适当的地址。使 IDT 中的中断向量高位+1之后落在shellcode上。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改shellcode&lt;/p&gt;
+&lt;p&gt;将 shellcode 中的 MARKER 修改为实际的 uid 和 gid 的保存地址。这样当shellcode运行时，即可找到 task_struct  和 thread_info 的地址，从而直接修改 real_cred 值，使当前进程获得 root 权限。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改 IDT&lt;/p&gt;
+&lt;p&gt;从 1 中得到的信息，和IDT 地址做计算，用计算好的负数值调用 perf_event_open ，可以使 int 4 的中断向量的高位 +1，从而指向shellcode。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;int 0x4&lt;/p&gt;
+&lt;p&gt;触发shellcode&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在shellcode中提权，并弹shell&lt;/p&gt;
+&lt;p&gt;修改 real_cred 获得root权限，并修复被修改的 IDT 和其他部分内存，&lt;/p&gt;
+&lt;p&gt;最后execl("/bin/bash", "-sh", NULL);&lt;/p&gt;
+&lt;p&gt;得到root权限的shell&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;移植到android系统&lt;/h3&gt;
+&lt;p&gt;Android采用了linux内核，且更新较linux在PC上的发行版慢。即使linux内核在2013年4月13日修复了该漏洞，原生Android系统和大量基于Android系统的第三方ROM仍然存在该漏洞。&lt;/p&gt;
+&lt;p&gt;在ARM linux下，该漏洞仍然存在，仍然可以通过负数的&lt;code&gt;event_id&lt;/code&gt;将任意内存地址+1。&lt;/p&gt;
+&lt;p&gt;但由于手机使用的ARM架构和x64架构下，linux内核代码有所不同，该漏洞的利用方式也有所不同。&lt;/p&gt;
+&lt;p&gt;但是在ARM linux下，IDT的结构如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;struct _idt_entry {
+  unsigned short base_lo;
+  unsigned short sel;
+  unsigned char unused;
+  unsigned char flags;
+  unsigned short base_hi;
+} __attribute__((packed));
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意到&lt;code&gt;base_hi&lt;/code&gt;是short型，而&lt;code&gt;perf_swevent_enabled&lt;/code&gt;是int型的数组，所以无法将地址修改base_hi到用户空间地址。&lt;/p&gt;
+&lt;p&gt;所以在ARM下我们没有修改IDT，而是在linux内核中寻找合适的函数指针。反复调用&lt;code&gt;perf_event_open&lt;/code&gt;，将函数指针的值加到用户能控制的地址，然后调用函数。&lt;code&gt;ptmx_fops&lt;/code&gt;结构中的fsync函数指针被初始化为0，且不需要特殊的权限即可调用。&lt;/p&gt;
+&lt;p&gt;利用的基本思路是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;/*&lt;/span&gt; &lt;span class="n"&gt;file_operations&lt;/span&gt; &lt;span class="err"&gt;结构&lt;/span&gt;&lt;span class="n"&gt;fsync函数的偏移为56&lt;/span&gt; &lt;span class="o"&gt;*/&lt;/span&gt;
+&lt;span class="nb nb-Type"&gt;int&lt;/span&gt; &lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pmtx_ops&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;56&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="nb nb-Type"&gt;int&lt;/span&gt; &lt;span class="n"&gt;payload&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;perf_table&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;perf_event_attr&lt;/span&gt; &lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;payload&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+
+&lt;span class="o"&gt;/*&lt;/span&gt; &lt;span class="err"&gt;反复调用将&lt;/span&gt;&lt;span class="n"&gt;fsync的值修改为合适的值&lt;/span&gt; &lt;span class="o"&gt;*/&lt;/span&gt;
+&lt;span class="n"&gt;syscall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__NR_perf_event_open&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;event_attr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+
+&lt;span class="o"&gt;/*&lt;/span&gt; &lt;span class="err"&gt;调用&lt;/span&gt; &lt;span class="o"&gt;*/&lt;/span&gt;
+&lt;span class="nb nb-Type"&gt;int&lt;/span&gt; &lt;span class="n"&gt;ptmx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/dev/ptmx&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;O_RDWR&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;fsync&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ptmx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;但是，linux系统中单个进程能够打开的file descriptor数量是有限制的，所以需要fork出足够多的进程，反复修改。&lt;/p&gt;
+&lt;h3&gt;受影响的ROM&lt;/h3&gt;
+&lt;p&gt;目前，测试了三款国内比较流行的手机，共4个ROM，该漏洞的情况如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Nexus 4 官方Rom 4.2.1 - 成功&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Nexus 4 Cyanogenmod 10.1.2 - 内核已修补&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Lenove 860i 官方ROM - 内核不支持perf_event&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Huawei U9508 官方ROM - 内核不支持perf_event&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content><category term="Security"></category><category term="Security"></category><category term="linux"></category></entry><entry><title>几个雷客图ASP站长安全助手的小问题</title><link href="https://ir193.github.io/lake2_bug.html" rel="alternate"></link><published>2009-10-08T09:32:35+08:00</published><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:/lake2_bug.html</id><summary type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的机房写的。&lt;/p&gt;
+&lt;p&gt;从电脑里翻出来这个真是百感交集啊，现在来看这篇文章，这些小trick确实是原创的，后来也没有再别处听说过。当然这与asp的没落、我不再关注web安全有着不小关系。&lt;/p&gt;
+&lt;p&gt;大学四年，安全方面的技术确实没有积累，是根本没有看。而现在又想转码，似乎绕了一个圈子又回到了开始。而一圈走下来却发现自己没有留下什么。&lt;/p&gt;
+&lt;h3&gt;以下是导入的正文&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;雷客图[http://down.chinaz.com/soft/17030.htm]是大侠lake2开发的基于ASP进行查杀木马、维护网站安全的程序。&lt;/p&gt;
+&lt;p&gt;雷客图采用正则表达式检查关键字的方法查找ASP木马，重点检查了一些关键组件的方法，如：wscript.shell的exec，fso的OpenTextFile。在网上能见到的ASP查杀工具中，雷客图的查杀率和误杀率都相当突出。但由于ASP脚本语言的特性，还是有一些方法突破雷客图的。本人水平不高，不过是发现几个小问题，写下来请各位高手指正 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;这是一篇导入的blog，其中的内容大概是09年暑假积累的。写作时间是10月20日，应该是刚刚开学时候去主楼后面的机房写的。&lt;/p&gt;
+&lt;p&gt;从电脑里翻出来这个真是百感交集啊，现在来看这篇文章，这些小trick确实是原创的，后来也没有再别处听说过。当然这与asp的没落、我不再关注web安全有着不小关系。&lt;/p&gt;
+&lt;p&gt;大学四年，安全方面的技术确实没有积累，是根本没有看。而现在又想转码，似乎绕了一个圈子又回到了开始。而一圈走下来却发现自己没有留下什么。&lt;/p&gt;
+&lt;h3&gt;以下是导入的正文&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;雷客图[http://down.chinaz.com/soft/17030.htm]是大侠lake2开发的基于ASP进行查杀木马、维护网站安全的程序。&lt;/p&gt;
+&lt;p&gt;雷客图采用正则表达式检查关键字的方法查找ASP木马，重点检查了一些关键组件的方法，如：wscript.shell的exec，fso的OpenTextFile。在网上能见到的ASP查杀工具中，雷客图的查杀率和误杀率都相当突出。但由于ASP脚本语言的特性，还是有一些方法突破雷客图的。本人水平不高，不过是发现几个小问题，写下来请各位高手指正。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;突破CreateObject组件检查（针对于老版本）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;CreateObject是所有ASP木马不可避免的函数，几乎所有功能都必须由其开始。老版本的雷客图检查了是否包含&lt;code&gt;&amp;amp;&lt;/code&gt;或&lt;code&gt;+&lt;/code&gt;以及是否为变量等，防止使用字符串拼接躲过检查。&lt;/p&gt;
+&lt;p&gt;满足以下条件&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;括号内没有引号&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;括号内出现&lt;code&gt;&amp;amp;&lt;/code&gt;或者&lt;code&gt;+&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;时即判断为有问题。&lt;/p&gt;
+&lt;p&gt;但由于vbs的正则表达式默认采用贪婪模式，即匹配最长的满足条件的字符串。这样，假如在CreateObject一行的末尾，又出现一个括号的话，正则表达式将匹配到最后一个括号。为了不产生语法错误，可以把括号放在注释中。像这样：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;&amp;lt;!--&lt;/span&gt; &lt;span class="n"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;vbs&lt;/span&gt; &lt;span class="o"&gt;--&amp;gt;&lt;/span&gt;
+&lt;span class="kr"&gt;Function&lt;/span&gt; &lt;span class="n"&gt;CreateObj&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nf"&gt;Set&lt;/span&gt; &lt;span class="n"&gt;CreateObj&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateObject&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;      &lt;span class="s"&gt;&amp;#39;&amp;quot;&amp;quot;&amp;quot;&amp;quot;)&lt;/span&gt;
+&lt;span class="s"&gt;End Function&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我们以变量作为CreateObject的参数，同时在括号后加上注释。以满足有引号的条件。最后加上括号使表达式匹配到最后一个括号。这样就绕过了检查。&lt;/p&gt;
+&lt;p&gt;而对于新版本（1.6 sp1），直接用字符串拼接就行了。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;空格躲过特征方法检查&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;除了一些比较危险的组件，雷客图还检查了一些组件的方法。由于组件的方法不能像字符串变量一样拼接，绕过的方法受到限制。&lt;/p&gt;
+&lt;p&gt;但雷客图的特征码中，为了保证查杀的准确性，都只查杀以&lt;code&gt;.&lt;/code&gt;开头的关键字。如&lt;code&gt;.ExecuteStatement&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;问题是我们可以在方法前加一个空格，还是可以运行的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;&amp;lt;!--&lt;/span&gt; &lt;span class="n"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;vbs&lt;/span&gt; &lt;span class="o"&gt;--&amp;gt;&lt;/span&gt;
+&lt;span class="n"&gt;wshl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="n"&gt;exec&lt;/span&gt; &lt;span class="n"&gt;strCmd&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这个是一个很大的突破，几乎使asp木马彻底绕过了检查。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;MSScriptControl执行任意语句&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;雷客图没有查杀MSScriptControl组件的关键字，而这个可以执行任意语句。&lt;/p&gt;
+&lt;p&gt;这个网上很多了，使用MSScriptControl执行代码，就可以使用&lt;code&gt;&amp;amp;&lt;/code&gt;或&lt;code&gt;+&lt;/code&gt;。虽然1.6sp2版本检查了这个组件，但是我们还是可以使用上面的方法躲过查杀。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;用Jscript躲过查杀&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;雷客图的很多特征码是针对VBS的，但ASP也可以用Jscript写。Jscript由于可以自由的换行、插入空格，比VBS更灵活。&lt;/p&gt;
+&lt;p&gt;比如调用Wscript.shell的exec可以有两种形式：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;&amp;lt;!--&lt;/span&gt; &lt;span class="n"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;vbs&lt;/span&gt; &lt;span class="o"&gt;--&amp;gt;&lt;/span&gt;
+&lt;span class="n"&gt;owshl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;
+&lt;span class="n"&gt;owshl&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;exec&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;第二种的方法名是字符串形式，所以可以用&lt;code&gt;+&lt;/code&gt;拼接（不能用&lt;code&gt;&amp;amp;&lt;/code&gt;）。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;万能加密工具&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以MSScriptControl主要方法可以写一个万能加密工具，用来躲过雷客图的查杀。但是还没有写。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用字符集来躲过查杀&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这个是JNC大牛说的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="cp"&gt;&amp;lt;%&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt; &lt;span class="n"&gt;codepage&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;65000&lt;/span&gt;&lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;&lt;span class="x"&gt;%e+x-x+x-e+x-c+x-u+x-t+x-e+x-(+x-r+x-e+x-q+x-u+x-e+x-s+x-t+x-(+x-+ACI-c+ACI)+x-)+x&lt;/span&gt;&lt;span class="err"&gt;-%&amp;gt;&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;雷客图总的来说是一个相当优秀的ASP木马查杀工具，其中有很多东西值得学习。我小菜不敢挑战lake2大侠，无非是在被忽视的地方小打小闹一下。最后，希望lake2多开发一些工具，多公布几个漏洞。&lt;/p&gt;
+&lt;p&gt;感觉asp真的过时了，看来我小菜要不断进步才能赶上时代的步伐啊~~~~&lt;/p&gt;</content><category term="Security"></category><category term="Security"></category><category term="imported blog"></category></entry><entry><title>记下几个奇怪的Com组件</title><link href="https://ir193.github.io/some_interesting_com.html" rel="alternate"></link><published>2009-10-08T09:32:35+08:00</published><updated>2009-10-08T09:32:35+08:00</updated><author><name>ir193</name></author><id>tag:ir193.github.io,2009-10-08:/some_interesting_com.html</id><summary type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;当时写这篇文章的原因是在写一个asp的webshell，asp的全部功能几乎都要靠ActiveX完成，所以当时几乎把系统注册表里CLASSID下的全部键值都试过了一遍，只是想找找有没有不常见的，提供合适功能的组件。最后当然是没有啦。&lt;/p&gt;
+&lt;p&gt;后来，webshell基本上写出来了，只可惜父母的电脑被学校收走了，另外一个U盘被我摔坏了，所以这个webshell未经面世就消失了，真是无比遗憾。&lt;/p&gt;
+&lt;!--more--&gt;
+
+&lt;h4&gt;下面是导入的正文&lt;/h4&gt;
+&lt;hr&gt;
+&lt;p&gt;记下几个不常见的组件，做下笔记。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;compatUI.Util&lt;/p&gt;
+&lt;p&gt;除了Wscript.Shell和shell.application以外，这个组件也能运行程序，但是不知道这个组件是不是系统自带的。原型是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;Function&lt;/span&gt;  &lt;span class="nt"&gt;RunApplication&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;pLayers&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;BSTR&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;pszCmdLine&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;BSTR&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;bEnableLog&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;I4&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ocu.Runapplication &amp;quot;&amp;quot;,&amp;quot;c:\windows\system32\cmd.exe …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;&lt;em&gt;这是一篇导入的blog&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;当时写这篇文章的原因是在写一个asp的webshell，asp的全部功能几乎都要靠ActiveX完成，所以当时几乎把系统注册表里CLASSID下的全部键值都试过了一遍，只是想找找有没有不常见的，提供合适功能的组件。最后当然是没有啦。&lt;/p&gt;
+&lt;p&gt;后来，webshell基本上写出来了，只可惜父母的电脑被学校收走了，另外一个U盘被我摔坏了，所以这个webshell未经面世就消失了，真是无比遗憾。&lt;/p&gt;
+&lt;!--more--&gt;
+
+&lt;h4&gt;下面是导入的正文&lt;/h4&gt;
+&lt;hr&gt;
+&lt;p&gt;记下几个不常见的组件，做下笔记。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;compatUI.Util&lt;/p&gt;
+&lt;p&gt;除了Wscript.Shell和shell.application以外，这个组件也能运行程序，但是不知道这个组件是不是系统自带的。原型是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;Function&lt;/span&gt;  &lt;span class="nt"&gt;RunApplication&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;pLayers&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;BSTR&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;pszCmdLine&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;BSTR&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;bEnableLog&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;I4&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ocu.Runapplication &amp;quot;&amp;quot;,&amp;quot;c:\windows\system32\cmd.exe&amp;quot;,FALSE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我测试了一下，Xp + Netbox下确实能运行。至于参数，没查到帮助文档，不太清楚。&lt;/p&gt;
+&lt;p&gt;这个组件还有一个比较有意思的函数CheckAdminPrivileges，看意思是检查管理员权限。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;MakeCAB.MakeCAB&lt;/p&gt;
+&lt;p&gt;这个组件用来打CAB包，不过好像没什么用，因为XP才带这个组件，但XP自带Zip打包功能，没人会用这个吧。想想唯一有用的是向没有压缩软件的2k系统复制东西，因为2k带expand命令，可以解压。&lt;/p&gt;
+&lt;p&gt;以下是简单的Vbs脚本，可以将文件夹打包成CAB包&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;sPath&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;请输入要打包的文件夹路径&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;sCab&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nt"&gt;input&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;请输入要CAB文件夹保存路径&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;set&lt;/span&gt; &lt;span class="nt"&gt;ocab&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;createobject&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;MakeCAB.MakeCAB&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;ocab&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;CreateCab&lt;/span&gt; &lt;span class="nt"&gt;sCAB&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;True&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;0&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;True&lt;/span&gt;
+&lt;span class="nt"&gt;packit&lt;/span&gt; &lt;span class="nt"&gt;sPath&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="nt"&gt;ocab&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;CloseCAB&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt; &lt;span class="nt"&gt;NOT&lt;/span&gt; &lt;span class="nt"&gt;Err&lt;/span&gt; &lt;span class="nt"&gt;Then&lt;/span&gt;
+    &lt;span class="nt"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;打包成功&amp;quot;&lt;/span&gt;
+&lt;span class="nt"&gt;else&lt;/span&gt;
+    &lt;span class="nt"&gt;wscript&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;有文件没能打入压缩包&amp;quot;&lt;/span&gt;
+&lt;span class="nt"&gt;End&lt;/span&gt; &lt;span class="nt"&gt;if&lt;/span&gt;
+
+&lt;span class="nt"&gt;SUB&lt;/span&gt; &lt;span class="nt"&gt;packit&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+    &lt;span class="nt"&gt;On&lt;/span&gt; &lt;span class="nt"&gt;Error&lt;/span&gt; &lt;span class="nt"&gt;Resume&lt;/span&gt; &lt;span class="nt"&gt;next&lt;/span&gt;
+    &lt;span class="nt"&gt;if&lt;/span&gt; &lt;span class="nt"&gt;Right&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nt"&gt;lt&lt;/span&gt;&lt;span class="o"&gt;;&amp;amp;&lt;/span&gt;&lt;span class="nt"&gt;gt&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;\&amp;quot; s1=s1 &amp;amp;amp; &amp;quot;&lt;/span&gt;&lt;span class="err"&gt;\&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="s2"&gt;    if Right(s2,1) &amp;amp;lt;&amp;amp;gt; &amp;quot;&amp;quot; s2=s2 &amp;amp;amp; &amp;quot;&lt;/span&gt;&lt;span class="err"&gt;\&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="s2"&gt;    &amp;#39;注释:S1文件路径,S2在CAB包内的路径&lt;/span&gt;
+&lt;span class="s2"&gt;    set ofso=createobject(&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;Scripting&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;FileSystemObject&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;)&lt;/span&gt;
+&lt;span class="s2"&gt;    if ofso.FolderExists(s1) then&lt;/span&gt;
+&lt;span class="s2"&gt;        set ofolder=ofso.GetFolder(s1)&lt;/span&gt;
+&lt;span class="s2"&gt;        For each oSubfolder in ofolder.Subfolders&lt;/span&gt;
+&lt;span class="s2"&gt;            packit s1 &amp;amp;amp; oSubfolder.Name,s2 &amp;amp;amp; oSubfolder.Name&lt;/span&gt;
+&lt;span class="s2"&gt;            &amp;#39;递归遍历文件夹&lt;/span&gt;
+&lt;span class="s2"&gt;        Next&lt;/span&gt;
+&lt;span class="s2"&gt;        For each oFile in ofolder.Files&lt;/span&gt;
+&lt;span class="s2"&gt;            ocab.AddFile s1 &amp;amp;amp; oFile.Name,s2 &amp;amp;amp; oFile.Name&lt;/span&gt;
+&lt;span class="s2"&gt;        Next&lt;/span&gt;
+&lt;span class="s2"&gt;    End if&lt;/span&gt;
+&lt;span class="s2"&gt;End SUB&lt;/span&gt;
+
+&lt;span class="s2"&gt;需要解压时，RAR就能打开。没有RAR，可以使用：`Expand &amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;filepath&lt;/span&gt;&lt;span class="err"&gt;&amp;quot;&lt;/span&gt; &lt;span class="nt"&gt;F&lt;/span&gt;&lt;span class="o"&gt;:*.*&lt;/span&gt; &lt;span class="nt"&gt;outpath&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;WinHTTPRequest.WinHTTPRequest&lt;/p&gt;
+&lt;p&gt;这个组件好像很重要，因为这个DLL总是在使用。功能和XMLHttp差不多，不同的是可以设置连接超时。具体用法和XMLhttp差不多&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;SAFRCFileDlg.FileOpen 和 UserAccounts.CommonDialog&lt;/p&gt;
+&lt;p&gt;这个用来创建打开文件对话框。类似的还有UserAccounts.CommonDialog，这个功能更强大。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nv"&gt;SAFRCFileDlg&lt;/span&gt;.&lt;span class="nv"&gt;FileSave&lt;/span&gt;对象：属性有：
+
+    &lt;span class="nv"&gt;FileName&lt;/span&gt; — 指定默认文件名；
+    &lt;span class="nv"&gt;FileType&lt;/span&gt; — 指定文件扩展名；
+    &lt;span class="nv"&gt;OpenFileSaveDlg&lt;/span&gt; — 显示文件保存框体方法。
+
+&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nv"&gt;SAFRCFileDlg&lt;/span&gt;.&lt;span class="k"&gt;FileOpen&lt;/span&gt; 对象：
+
+    &lt;span class="nv"&gt;FileName&lt;/span&gt; — 默认文件名属性；
+    &lt;span class="nv"&gt;OpenFileOpenDlg&lt;/span&gt; — 显示打开文件框体方法。
+
+&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nv"&gt;UserAccounts&lt;/span&gt;.&lt;span class="nv"&gt;CommonDialog&lt;/span&gt;对象：
+
+    &lt;span class="nv"&gt;Filter&lt;/span&gt; — 扩展名属性（&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vbs File|*.vbs|All Files|*.*&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;）；&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;
+    &lt;span class="nv"&gt;FilterIndex&lt;/span&gt; — 指定
+    &lt;span class="nv"&gt;InitialDir&lt;/span&gt; — 指定默认的文件夹
+    &lt;span class="nv"&gt;FileName&lt;/span&gt; — 指定的文件名
+    &lt;span class="nv"&gt;Flags&lt;/span&gt; — 对话框的类型
+    &lt;span class="nv"&gt;Showopen&lt;/span&gt; — 显示：
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;SAPI.SpVoice&lt;/p&gt;
+&lt;p&gt;这个有点意思，可以语音读文字。一个例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;SzBuf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;InputBox&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;输入英文&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;输入&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;I LOVE YOU&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;tack&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CreateObject&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;SAPI.SpVoice&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;tack&lt;/span&gt;.&lt;span class="nv"&gt;Speak&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;SzBuf&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;agent.control&lt;/p&gt;
+&lt;p&gt;这个也有点意思，用来产生一个officeXP那样的小助手。一个例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;AgentControl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;createobject&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;agent.control&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;AgentControl&lt;/span&gt;.&lt;span class="nv"&gt;Connected&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;True&lt;/span&gt;
+&lt;span class="nv"&gt;AgentControl&lt;/span&gt;.&lt;span class="nv"&gt;Characters&lt;/span&gt;.&lt;span class="nv"&gt;Load&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Merlin&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Merlin.acs&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;Set&lt;/span&gt; &lt;span class="nv"&gt;Merlin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;AgentControl&lt;/span&gt;.&lt;span class="nv"&gt;Characters&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Merlin&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Get&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;State&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Showing, Speaking&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Get&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Animation&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Greet, GreetReturn&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="k"&gt;Show&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Get&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;State&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Hiding&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Play&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Greet&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;  &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;这个让他鞠躬&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Speak&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;hello&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;  &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;这个让他说话&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Play&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Greet&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;wscript&lt;/span&gt;.&lt;span class="nv"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Speak&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;welcome &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Play&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;Greet&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;wscript&lt;/span&gt;.&lt;span class="nv"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Speak&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;goodbay&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;wscript&lt;/span&gt;.&lt;span class="nv"&gt;sleep&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
+&lt;span class="nv"&gt;Merlin&lt;/span&gt;.&lt;span class="nv"&gt;Hide&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/li&gt;
+&lt;/ol&gt;</content><category term="Security"></category><category term="Security"></category><category term="imported blog"></category></entry></feed>

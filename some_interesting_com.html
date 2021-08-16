@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>Another Blog</title>
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta name="description" content="yet another blog.">
+
+    <link rel="stylesheet" href="/theme/css/pure-min.css" type="text/css" media="all" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="/grids-responsive-old-ie-min.css">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="/theme/css/grids-responsive-min.css" type="text/css" media="all" />
+<!--<![endif]-->
+    <link rel="stylesheet" href="/theme/css/blog.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/theme/css/ty.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/theme/css/highlight.css" type="text/css" media="all" />
+
+    <link href="https://ir193.github.io/feeds/all.rss.xml" type="application/atom+xml" rel="alternate" title="Another Blog Full Atom Feed" />
+    <link href="https://ir193.github.io/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="Another Blog Categories Atom Feed" />
+    <link href="https://ir193.github.io/feeds/{slug}.rss.xml" type="application/rss+xml" rel="alternate" title="Another Blog Categories RSS Feed" />
+    
+</head>
+<body>
+
+<div id="layout" class="ty pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-6-24">
+        <div class="header">
+            <nav class="navi">
+                <span><a href=".">Home</a></span>
+                <span class="no-mobile"><a href="./category/life.html">Life</a></span>
+                <span class="no-mobile"><a href="./category/security.html">Security</a></span>
+                <!-- <span><a href="#">Projects</a></span> -->
+                <span><a href="./pages/about.html">About</a></span>
+            </nav>
+        </div>
+    </div>
+    <div class="content pure-u-1 pure-u-md-12-24">
+        <div class="artical">
+<artical class="post post-preview">
+    <div class="post-header">
+        <h2 class="post-title">
+            <a href="./some_interesting_com.html" rel="bookmark" title="记下几个奇怪的Com组件">
+                记下几个奇怪的Com组件
+            </a>
+        </h2>
+    </div>
+    <div class="post-content">
+        <p><em>这是一篇导入的blog</em></p>
+<p>当时写这篇文章的原因是在写一个asp的webshell，asp的全部功能几乎都要靠ActiveX完成，所以当时几乎把系统注册表里CLASSID下的全部键值都试过了一遍，只是想找找有没有不常见的，提供合适功能的组件。最后当然是没有啦。</p>
+<p>后来，webshell基本上写出来了，只可惜父母的电脑被学校收走了，另外一个U盘被我摔坏了，所以这个webshell未经面世就消失了，真是无比遗憾。</p>
+<!--more-->
+
+<h4>下面是导入的正文</h4>
+<hr>
+<p>记下几个不常见的组件，做下笔记。</p>
+<ol>
+<li>
+<p>compatUI.Util</p>
+<p>除了Wscript.Shell和shell.application以外，这个组件也能运行程序，但是不知道这个组件是不是系统自带的。原型是：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">Function</span>  <span class="nt">RunApplication</span><span class="o">(</span><span class="nt">pLayers</span><span class="p">:</span><span class="nd">BSTR</span><span class="o">;</span> <span class="nt">pszCmdLine</span><span class="p">:</span><span class="nd">BSTR</span><span class="o">;</span> <span class="nt">bEnableLog</span><span class="p">:</span><span class="nd">I4</span><span class="o">)</span>
+</code></pre></div>
+
+<p>使用方法：</p>
+<div class="highlight"><pre><span></span><code>ocu.Runapplication &quot;&quot;,&quot;c:\windows\system32\cmd.exe&quot;,FALSE
+</code></pre></div>
+
+<p>我测试了一下，Xp + Netbox下确实能运行。至于参数，没查到帮助文档，不太清楚。</p>
+<p>这个组件还有一个比较有意思的函数CheckAdminPrivileges，看意思是检查管理员权限。</p>
+</li>
+<li>
+<p>MakeCAB.MakeCAB</p>
+<p>这个组件用来打CAB包，不过好像没什么用，因为XP才带这个组件，但XP自带Zip打包功能，没人会用这个吧。想想唯一有用的是向没有压缩软件的2k系统复制东西，因为2k带expand命令，可以解压。</p>
+<p>以下是简单的Vbs脚本，可以将文件夹打包成CAB包</p>
+<div class="highlight"><pre><span></span><code><span class="nt">sPath</span> <span class="o">=</span> <span class="nt">input</span><span class="o">(</span><span class="s2">&quot;请输入要打包的文件夹路径&quot;</span><span class="o">)</span>
+<span class="nt">sCab</span> <span class="o">=</span> <span class="nt">input</span><span class="o">(</span><span class="s2">&quot;请输入要CAB文件夹保存路径&quot;</span><span class="o">)</span>
+<span class="nt">set</span> <span class="nt">ocab</span><span class="o">=</span><span class="nt">createobject</span><span class="o">(</span><span class="s2">&quot;MakeCAB.MakeCAB&quot;</span><span class="o">)</span>
+<span class="nt">ocab</span><span class="p">.</span><span class="nc">CreateCab</span> <span class="nt">sCAB</span><span class="o">,</span><span class="nt">True</span><span class="o">,</span><span class="nt">0</span><span class="o">,</span><span class="nt">True</span>
+<span class="nt">packit</span> <span class="nt">sPath</span><span class="o">,</span><span class="s2">&quot;&quot;</span>
+<span class="nt">ocab</span><span class="p">.</span><span class="nc">CloseCAB</span>
+<span class="nt">if</span> <span class="nt">NOT</span> <span class="nt">Err</span> <span class="nt">Then</span>
+    <span class="nt">wscript</span><span class="p">.</span><span class="nc">echo</span> <span class="s2">&quot;打包成功&quot;</span>
+<span class="nt">else</span>
+    <span class="nt">wscript</span><span class="p">.</span><span class="nc">echo</span> <span class="s2">&quot;有文件没能打入压缩包&quot;</span>
+<span class="nt">End</span> <span class="nt">if</span>
+
+<span class="nt">SUB</span> <span class="nt">packit</span><span class="o">(</span><span class="nt">s1</span><span class="o">,</span><span class="nt">s2</span><span class="o">)</span>
+    <span class="nt">On</span> <span class="nt">Error</span> <span class="nt">Resume</span> <span class="nt">next</span>
+    <span class="nt">if</span> <span class="nt">Right</span><span class="o">(</span><span class="nt">s1</span><span class="o">,</span><span class="nt">1</span><span class="o">)</span> <span class="o">&amp;</span><span class="nt">lt</span><span class="o">;&amp;</span><span class="nt">gt</span><span class="o">;</span> <span class="s2">&quot;\&quot; s1=s1 &amp;amp; &quot;</span><span class="err">\</span><span class="s2">&quot;</span>
+<span class="s2">    if Right(s2,1) &amp;lt;&amp;gt; &quot;&quot; s2=s2 &amp;amp; &quot;</span><span class="err">\</span><span class="s2">&quot;</span>
+<span class="s2">    &#39;注释:S1文件路径,S2在CAB包内的路径</span>
+<span class="s2">    set ofso=createobject(&quot;</span><span class="nt">Scripting</span><span class="p">.</span><span class="nc">FileSystemObject</span><span class="s2">&quot;)</span>
+<span class="s2">    if ofso.FolderExists(s1) then</span>
+<span class="s2">        set ofolder=ofso.GetFolder(s1)</span>
+<span class="s2">        For each oSubfolder in ofolder.Subfolders</span>
+<span class="s2">            packit s1 &amp;amp; oSubfolder.Name,s2 &amp;amp; oSubfolder.Name</span>
+<span class="s2">            &#39;递归遍历文件夹</span>
+<span class="s2">        Next</span>
+<span class="s2">        For each oFile in ofolder.Files</span>
+<span class="s2">            ocab.AddFile s1 &amp;amp; oFile.Name,s2 &amp;amp; oFile.Name</span>
+<span class="s2">        Next</span>
+<span class="s2">    End if</span>
+<span class="s2">End SUB</span>
+
+<span class="s2">需要解压时，RAR就能打开。没有RAR，可以使用：`Expand &quot;</span><span class="nt">filepath</span><span class="err">&quot;</span> <span class="nt">F</span><span class="o">:*.*</span> <span class="nt">outpath</span><span class="err">`</span>
+</code></pre></div>
+
+</li>
+<li>
+<p>WinHTTPRequest.WinHTTPRequest</p>
+<p>这个组件好像很重要，因为这个DLL总是在使用。功能和XMLHttp差不多，不同的是可以设置连接超时。具体用法和XMLhttp差不多</p>
+</li>
+<li>
+<p>SAFRCFileDlg.FileOpen 和 UserAccounts.CommonDialog</p>
+<p>这个用来创建打开文件对话框。类似的还有UserAccounts.CommonDialog，这个功能更强大。</p>
+<div class="highlight"><pre><span></span><code><span class="o">*</span> <span class="nv">SAFRCFileDlg</span>.<span class="nv">FileSave</span>对象：属性有：
+
+    <span class="nv">FileName</span> — 指定默认文件名；
+    <span class="nv">FileType</span> — 指定文件扩展名；
+    <span class="nv">OpenFileSaveDlg</span> — 显示文件保存框体方法。
+
+<span class="o">*</span> <span class="nv">SAFRCFileDlg</span>.<span class="k">FileOpen</span> 对象：
+
+    <span class="nv">FileName</span> — 默认文件名属性；
+    <span class="nv">OpenFileOpenDlg</span> — 显示打开文件框体方法。
+
+<span class="o">*</span> <span class="nv">UserAccounts</span>.<span class="nv">CommonDialog</span>对象：
+
+    <span class="nv">Filter</span> — 扩展名属性（<span class="s2">&quot;</span><span class="s">vbs File|*.vbs|All Files|*.*</span><span class="s2">&quot;</span>）；<span class="o">&lt;</span>
+    <span class="nv">FilterIndex</span> — 指定
+    <span class="nv">InitialDir</span> — 指定默认的文件夹
+    <span class="nv">FileName</span> — 指定的文件名
+    <span class="nv">Flags</span> — 对话框的类型
+    <span class="nv">Showopen</span> — 显示：
+</code></pre></div>
+
+</li>
+<li>
+<p>SAPI.SpVoice</p>
+<p>这个有点意思，可以语音读文字。一个例子：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">SzBuf</span> <span class="o">=</span> <span class="k">InputBox</span><span class="ss">(</span> <span class="s2">&quot;</span><span class="s">输入英文</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">输入</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">I LOVE YOU</span><span class="s2">&quot;</span> <span class="ss">)</span>
+<span class="nv">set</span> <span class="nv">tack</span><span class="o">=</span><span class="nv">CreateObject</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">SAPI.SpVoice</span><span class="s2">&quot;</span><span class="ss">)</span>
+<span class="nv">tack</span>.<span class="nv">Speak</span><span class="ss">(</span><span class="nv">SzBuf</span><span class="ss">)</span>
+</code></pre></div>
+
+</li>
+<li>
+<p>agent.control</p>
+<p>这个也有点意思，用来产生一个officeXP那样的小助手。一个例子：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">AgentControl</span><span class="o">=</span><span class="nv">createobject</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">agent.control</span><span class="s2">&quot;</span><span class="ss">)</span>
+<span class="nv">AgentControl</span>.<span class="nv">Connected</span> <span class="o">=</span> <span class="nv">True</span>
+<span class="nv">AgentControl</span>.<span class="nv">Characters</span>.<span class="nv">Load</span> <span class="s2">&quot;</span><span class="s">Merlin</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">Merlin.acs</span><span class="s2">&quot;</span>
+<span class="nv">Set</span> <span class="nv">Merlin</span> <span class="o">=</span> <span class="nv">AgentControl</span>.<span class="nv">Characters</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">Merlin</span><span class="s2">&quot;</span><span class="ss">)</span>
+<span class="nv">Merlin</span>.<span class="nv">Get</span> <span class="s2">&quot;</span><span class="s">State</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">Showing, Speaking</span><span class="s2">&quot;</span>
+<span class="nv">Merlin</span>.<span class="nv">Get</span> <span class="s2">&quot;</span><span class="s">Animation</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">Greet, GreetReturn</span><span class="s2">&quot;</span>
+<span class="nv">Merlin</span>.<span class="k">Show</span>
+<span class="nv">Merlin</span>.<span class="nv">Get</span> <span class="s2">&quot;</span><span class="s">State</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">Hiding</span><span class="s2">&quot;</span>
+<span class="nv">Merlin</span>.<span class="nv">Play</span> <span class="s2">&quot;</span><span class="s">Greet</span><span class="s2">&quot;</span>  <span class="s1">&#39;</span><span class="s">这个让他鞠躬</span>
+<span class="nv">Merlin</span>.<span class="nv">Speak</span> <span class="s2">&quot;</span><span class="s">hello</span><span class="s2">&quot;</span>  <span class="s1">&#39;</span><span class="s">这个让他说话</span>
+<span class="nv">Merlin</span>.<span class="nv">Play</span> <span class="s2">&quot;</span><span class="s">Greet</span><span class="s2">&quot;</span>
+<span class="nv">wscript</span>.<span class="nv">sleep</span> <span class="mi">5000</span>
+<span class="nv">Merlin</span>.<span class="nv">Speak</span> <span class="s2">&quot;</span><span class="s">welcome </span><span class="s2">&quot;</span>
+<span class="nv">Merlin</span>.<span class="nv">Play</span> <span class="s2">&quot;</span><span class="s">Greet</span><span class="s2">&quot;</span>
+<span class="nv">wscript</span>.<span class="nv">sleep</span> <span class="mi">5000</span>
+<span class="nv">Merlin</span>.<span class="nv">Speak</span> <span class="s2">&quot;</span><span class="s">goodbay</span><span class="s2">&quot;</span>
+<span class="nv">wscript</span>.<span class="nv">sleep</span> <span class="mi">5000</span>
+<span class="nv">Merlin</span>.<span class="nv">Hide</span>
+</code></pre></div>
+
+</li>
+</ol>
+    </div>
+    <div class="post-footer">
+        <span class="meta-prep">Post in</span>
+        <abbr class="date" title="2009-10-08T09:32:35+08:00"> 
+            <a href="./archive/2009/Oct/index.html">
+                Oct 08 2009 </a>
+        </abbr>
+        <br />
+        Published under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">(CC) BY-NC-SA</a>
+        <span class="meta-prep"> with tags</span>
+                <a href="./tag/security.html">Security</a>
+                <a href="./tag/imported-blog.html">imported blog</a>
+    </div>
+    <div class="clear"></div>
+</artical>
+<section>
+    <div id="disqus_thread">
+    <script type="text/javascript">
+    var disqus_identifier = "some_interesting_com.html";
+    (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'https://ir193.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    </div>
+
+</section>
+            <div class="footer">
+                Powered by <a href="http://getpelican.com/">Pelican</a> <br />
+                which takes great advantage of <a href="http://python.org">Python</a> <br />
+                <a title="Web Statistics" href="http://clicky.com/100758617"><img alt="Web Statistics" src="//static.getclicky.com/media/links/badge.gif" border="0" /></a>
+            </div>
+        </div>
+    </div>
+    <div class="pure-u-1 pure-u-md-6-24"> </div>
+</div>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(100758617); }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100758617ns.gif" /></p></noscript>
+
+</body>
+</html>

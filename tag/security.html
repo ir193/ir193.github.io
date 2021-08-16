@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>Another Blog - Security tag</title>
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta name="description" content="yet another blog.">
+
+    <link rel="stylesheet" href="/theme/css/pure-min.css" type="text/css" media="all" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="/grids-responsive-old-ie-min.css">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="/theme/css/grids-responsive-min.css" type="text/css" media="all" />
+<!--<![endif]-->
+    <link rel="stylesheet" href="/theme/css/blog.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/theme/css/ty.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/theme/css/highlight.css" type="text/css" media="all" />
+
+    <link href="https://ir193.github.io/feeds/all.rss.xml" type="application/atom+xml" rel="alternate" title="Another Blog Full Atom Feed" />
+    
+</head>
+<body>
+
+<div id="layout" class="ty pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-6-24">
+        <div class="header">
+            <nav class="navi">
+                <span><a href="..">Home</a></span>
+                <span class="no-mobile"><a href="../category/life.html">Life</a></span>
+                <span class="no-mobile"><a href="../category/security.html">Security</a></span>
+                <!-- <span><a href="#">Projects</a></span> -->
+                <span><a href="../pages/about.html">About</a></span>
+            </nav>
+        </div>
+    </div>
+    <div class="content pure-u-1 pure-u-md-12-24">
+        <div class="artical">
+<div class="post-list">
+    <section class="post post-preview">
+        <div class="post-header">
+            <h2 class="post-title">
+                <a href="../cve-2013-2596.html" rel="bookmark" title="CVE-2013-2596 本地提权漏洞">
+                    CVE-2013-2596 本地提权漏洞
+                </a>
+            </h2>
+        </div>
+        <div class="post-content">
+            <p><a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2013-2596">cve-2013-2596</a>本地提权漏洞，于2013年4月13日公布，影响版本3.8.9之前（的某些特定版本？）</p>
+<!--more-->
+
+<p>网上相关资料相对较少。网上一般的介绍说是影响“某些Motorola手机和其他产品” ，但是实际上引起漏洞的文件位于 <code>/drivers/video/fbmem.c</code>。目前还不清楚实际的影响范围。从xda论坛的情况来看，影响范围远远不止motorola手机，包括SAMSUNG Galaxy S4（启用SE linux），Galaxy Tablet 7，Acer A700，Sony Xperia Tablet S等等大量使用Android系统的手机和平板电脑都受影响。</p>
+<p>手上的手机，联想860i、华为荣耀四核，全部受这个漏洞影响。其中，联想860i不能成功提权但是重启，华为U9806成功提权。</p>
+<p>根据目前搜到的信息 …</p>
+        </div>
+        <div class="post-more">
+            <a href="../cve-2013-2596.html">+ Read More</a>
+        </div>
+    </section>
+
+    <section class="post post-brief">
+        <h3 class="post-title">
+            <a href="../cve-2013-2094.html" rel="bookmark" title="CVE-2013-2094 本地提权漏洞">
+                CVE-2013-2094 本地提权漏洞
+            </a>
+            <time>2013-10-09</time>
+        </h3>
+    </section>
+
+
+    <section class="post post-brief">
+        <h3 class="post-title">
+            <a href="../lake2_bug.html" rel="bookmark" title="几个雷客图ASP站长安全助手的小问题">
+                几个雷客图ASP站长安全助手的小问题
+            </a>
+            <time>2009-10-08</time>
+        </h3>
+    </section>
+
+
+    <section class="post post-brief">
+        <h3 class="post-title">
+            <a href="../some_interesting_com.html" rel="bookmark" title="记下几个奇怪的Com组件">
+                记下几个奇怪的Com组件
+            </a>
+            <time>2009-10-08</time>
+        </h3>
+    </section>
+
+
+            <div class="footer">
+                Powered by <a href="http://getpelican.com/">Pelican</a> <br />
+                which takes great advantage of <a href="http://python.org">Python</a> <br />
+                <a title="Web Statistics" href="http://clicky.com/100758617"><img alt="Web Statistics" src="//static.getclicky.com/media/links/badge.gif" border="0" /></a>
+            </div>
+        </div>
+    </div>
+    <div class="pure-u-1 pure-u-md-6-24"> </div>
+</div>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(100758617); }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100758617ns.gif" /></p></noscript>
+
+</body>
+</html>
