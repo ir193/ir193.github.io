@@ -118,3 +118,28 @@ p img{
     display: block;
     margin: auto;
 }
+
+
+details {
+    background: #eee;
+    margin: 5px;
+}
+  
+details[open] summary {
+    background: #D00;
+}
+
+details summary::before {
+    content: '\2212  ';
+    font-weight: bold;
+}
+
+details[open] summary::before {
+    content: '\002B  ';
+    font-weight: bold;
+}
+
+details summary {
+
+    padding: 10px;
+}
